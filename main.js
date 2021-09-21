@@ -134,6 +134,13 @@ class Intex extends utils.Adapter {
                         },
                         native: {},
                     });
+                    await this.setObjectNotExistsAsync(device.deviceId + ".status", {
+                        type: "channel",
+                        common: {
+                            name: "Status values",
+                        },
+                        native: {},
+                    });
 
                     this.json2iob.parse(device.deviceId + ".general", device);
 
@@ -180,15 +187,66 @@ class Intex extends utils.Adapter {
     }
 
     async updateDevices() {
-        return;
         this.deviceArray.forEach(async (deviceId) => {
+            const sid = Date.now();
             await this.requestClient({
-                method: "POST",
-                url: "",
+                method: "post",
+                url: "https://intexiotappservice.azurewebsites.net/api/v1/command/" + deviceId,
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "*/*",
+                    "User-Agent": "Intex/1.0.13 (iPhone; iOS 14.7; Scale/3.00)",
+                    "Accept-Language": "de-DE;q=1, en-DE;q=0.9",
+                    Authorization: "Bearer " + this.session.token,
+                },
+                data: JSON.stringify({
+                    sid: sid,
+                    type: "1",
+                    data: "8888060FEE0F01DA",
+                }),
             })
-                .then((res) => {
+                .then(async (res) => {
                     this.log.debug(JSON.stringify(res.data));
-                    return res.data;
+                    await this.sleep(20000);
+                    await this.requestClient({
+                        method: "GET",
+                        url: "https://intexiotappservice.azurewebsites.net/api/v1/device/command/feedback/" + deviceId + "/" + sid,
+                        headers: {
+                            "Content-Type": "application/json",
+                            Accept: "*/*",
+                            "User-Agent": "Intex/1.0.13 (iPhone; iOS 14.7; Scale/3.00)",
+                            "Accept-Language": "de-DE;q=1, en-DE;q=0.9",
+                            Authorization: "Bearer " + this.session.token,
+                        },
+                    })
+                        .then(async (res) => {
+                            this.log.debug(JSON.stringify(res.data));
+                            if (res.data && res.data.result === "ok") {
+                                const returnValue = res.data.data;
+
+                                for (var n = 0; n < returnValue.length; n += 2) {
+                                    const index = n / 2;
+                                    await this.setObjectNotExistsAsync(deviceId + ".status.value" + index, {
+                                        type: "state",
+                                        common: {
+                                            role: "value",
+                                            type: "number",
+                                            write: false,
+                                            read: false,
+                                        },
+                                        native: {},
+                                    });
+
+                                    this.setState(deviceId + ".status.value" + index, parseInt(returnValue.substr(n, 2), 16), true);
+                                }
+                            }
+                        })
+                        .catch((error) => {
+                            this.log.error(error);
+                            if (error.response) {
+                                this.log.error(JSON.stringify(error.response.data));
+                            }
+                        });
                 })
                 .catch((error) => {
                     this.log.error(error);
@@ -226,7 +284,9 @@ class Intex extends utils.Adapter {
                 }, 1000 * 60 * 1);
             });
     }
-
+    sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
     /**
      * Is called when adapter shuts down - callback has to be called under any circumstances!
      * @param {() => void} callback
