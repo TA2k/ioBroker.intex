@@ -52,6 +52,7 @@ class Intex extends utils.Adapter {
             "8888060F010004": "D4",
             "8888060F011000": "C8",
             "8888060F010010": "C8",
+            "8888060F010001": "D7",
         };
         this.subscribeStates("*");
 
@@ -85,6 +86,8 @@ class Intex extends utils.Adapter {
         })
             .then((res) => {
                 this.log.debug(JSON.stringify(res.data));
+
+                this.setState("info.connection", true, true);
                 this.session = res.data;
             })
             .catch((error) => {
@@ -205,7 +208,7 @@ class Intex extends utils.Adapter {
                 accept: "*/*",
                 "content-type": "application/json",
             },
-            data: { refresh_token: this.session.refresh_token },
+            data: { refresh_token: this.session.refreshToken },
         })
             .then((res) => {
                 this.log.debug(JSON.stringify(res.data));
@@ -297,7 +300,7 @@ class Intex extends utils.Adapter {
                         Authorization: "Bearer " + this.session.token,
                     },
                     data: JSON.stringify({
-                        sid: Date.now() + "000",
+                        sid: Date.now(),
                         type: "1",
                         data: objectData + this.objectEndings[objectData],
                     }),
