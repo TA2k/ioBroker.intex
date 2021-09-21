@@ -15,6 +15,14 @@
 
 Adapter for Intex Whirlpool
 
+##Loginablauf:
+Die Intex App Mail und Passwort eingeben.
+
+##Steuern
+intex.0.id.remote auf true setzen steuert den jeweiligen Befehl
+
+Bisher ist nur eine Steuerung möglich aber es können nicht die Werte abgerufen werden. Dazu müsste man erst den Hex Wert der App decoden.
+
 ## Changelog
 
 ### 0.0.1
