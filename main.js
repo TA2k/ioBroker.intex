@@ -65,7 +65,7 @@ class Intex extends utils.Adapter {
                 await this.updateDevices();
             }, this.config.interval * 60 * 1000);
             this.refreshTokenInterval = setInterval(() => {
-                this.refreshToken();
+                this.login();
             }, 1 * 60 * 60 * 1000); //1hour
         }
     }
@@ -249,6 +249,11 @@ class Intex extends utils.Adapter {
                         });
                 })
                 .catch((error) => {
+                    if (error.response && error.response.status >= 500) {
+                        this.log.warn("Service not reachable");
+                        error.response && this.log.debug(JSON.stringify(error.response.data));
+                        return;
+                    }
                     this.log.error(error);
                     if (error.response) {
                         this.log.error(JSON.stringify(error.response.data));
@@ -257,33 +262,6 @@ class Intex extends utils.Adapter {
         });
     }
 
-    async refreshToken() {
-        await this.requestClient({
-            method: "POST",
-            url: "https://intexiotappservice.azurewebsites.net/api/oauth/auth",
-
-            headers: {
-                accept: "*/*",
-                "content-type": "application/json",
-            },
-            data: { refresh_token: this.session.refreshToken },
-        })
-            .then((res) => {
-                this.log.debug(JSON.stringify(res.data));
-                this.session = res.data;
-                this.setState("info.connection", true, true);
-                return res.data;
-            })
-            .catch((error) => {
-                this.log.error("refresh token failed");
-                this.log.error(error);
-                error.response && this.log.error(JSON.stringify(error.response.data));
-                this.log.error("Start relogin in 1min");
-                this.reLoginTimeout = setTimeout(() => {
-                    this.login();
-                }, 1000 * 60 * 1);
-            });
-    }
     sleep(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
