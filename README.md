@@ -13,14 +13,16 @@
 
 ## intex adapter for ioBroker
 
-Adapter for Intex Whirlpool
+Adapter for Intex Whirlpool with wifi modul 
 
-##Loginablauf:
+## Loginablauf:
 Die Intex App Mail und Passwort eingeben.
 
-##Steuern
+## Steuern
 intex.0.id.remote auf true setzen steuert den jeweiligen Befehl
 
+## Diskussion und Fragen:
+https://forum.iobroker.net/topic/47932/test-intext-app-v0-0-x
 
 ## Changelog
 
