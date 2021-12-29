@@ -38,4 +38,16 @@ systemDictionary = {
         pl: "Hasło do aplikacji",
         "zh-cn": "应用密码",
     },
+    "Update interval (in minutes)": {
+        en: "Update interval (in minutes)",
+        de: "Aktualisierungsintervall (in Minuten)",
+        ru: "Интервал обновления (в минутах)",
+        pt: "Intervalo de atualização (em minutos)",
+        nl: "Update-interval (in minuten)",
+        fr: "Intervalle de mise à jour (en minutes)",
+        it: "Intervallo di aggiornamento (in minuti)",
+        es: "Intervalo de actualización (en minutos)",
+        pl: "Interwał aktualizacji (w minutach)",
+        "zh-cn": "更新间隔（分钟）",
+    },
 };

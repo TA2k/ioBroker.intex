@@ -1,9 +1,9 @@
 {
     "common": {
         "name": "intex",
-        "version": "0.0.3",
+        "version": "0.0.4",
         "news": {
-            "0.0.3": {
+            "0.0.4": {
                 "en": "initial release",
                 "de": "Erstveröffentlichung",
                 "ru": "Начальная версия",
@@ -62,6 +62,11 @@
         "connectionType": "cloud",
         "dataSource": "poll",
         "materialize": true,
+        "plugins": {
+            "sentry": {
+                "dsn": "https://d220fa0b3fe04f9383cff271d232c3e7@sentry.iobroker.net/155"
+            }
+        },
         "dependencies": [
             {
                 "js-controller": ">=3.0.0"

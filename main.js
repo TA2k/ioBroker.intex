@@ -224,7 +224,7 @@ class Intex extends utils.Adapter {
                             if (res.data && res.data.result === "ok") {
                                 const returnValue = res.data.data;
 
-                                for (var n = 0; n < returnValue.length; n += 2) {
+                                for (let n = 0; n < returnValue.length; n += 2) {
                                     const index = n / 2;
                                     await this.setObjectNotExistsAsync(deviceId + ".status.value" + index, {
                                         type: "state",
@@ -263,7 +263,9 @@ class Intex extends utils.Adapter {
     }
 
     sleep(ms) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
+        return new Promise((resolve) => {
+            this.sleepTimeout = setTimeout(resolve, ms);
+        });
     }
     /**
      * Is called when adapter shuts down - callback has to be called under any circumstances!
@@ -272,11 +274,12 @@ class Intex extends utils.Adapter {
     onUnload(callback) {
         try {
             this.setState("info.connection", false, true);
-            clearTimeout(this.refreshTimeout);
-            clearTimeout(this.reLoginTimeout);
-            clearTimeout(this.refreshTokenTimeout);
-            clearInterval(this.updateInterval);
-            clearInterval(this.refreshTokenInterval);
+            this.refreshTimeout && clearTimeout(this.refreshTimeout);
+            this.reLoginTimeout && clearTimeout(this.reLoginTimeout);
+            this.refreshTokenTimeout && clearTimeout(this.refreshTokenTimeout);
+            this.updateInterval && clearInterval(this.updateInterval);
+            this.refreshTokenInterval && clearInterval(this.refreshTokenInterval);
+            this.sleepTimeout && clearInterval(this.sleepTimeout);
             callback();
         } catch (e) {
             callback();
