@@ -26,6 +26,10 @@ https://forum.iobroker.net/topic/47932/test-intext-app-v0-0-x
 
 ## Changelog
 
+### 0.0.5
+* (PLCHome) Temperatur setzen hinzugefügt, Objekt muss einmal gelöscht werden.
+* (PLCHome) Decodierung der Statusinformationen
+
 ### 0.0.1
 * (TA2k) initial release
 
