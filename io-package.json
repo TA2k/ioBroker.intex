@@ -1,19 +1,19 @@
 {
     "common": {
         "name": "intex",
-        "version": "0.0.5",
+        "version": "0.0.6",
         "news": {
-            "0.0.5": {
-                "en": "initial release",
-                "de": "Erstveröffentlichung",
-                "ru": "Начальная версия",
-                "pt": "lançamento inicial",
-                "nl": "Eerste uitgave",
-                "fr": "Première version",
-                "it": "Versione iniziale",
-                "es": "Versión inicial",
-                "pl": "Pierwsze wydanie",
-                "zh-cn": "首次出版"
+            "0.0.6": {
+                "en": "Defined setting of states",
+                "de": "Definiertes Setzen von Zuständen",
+                "ru": "Определенная настройка состояний",
+                "pt": "Configuração definida de estados",
+                "nl": "Gedefinieerde instelling van toestanden",
+                "fr": "Réglage défini des états",
+                "it": "Impostazione definita degli stati",
+                "es": "Configuración definida de estados",
+                "pl": "Zdefiniowane ustawienie stanów",
+                "zh-cn": "状态的定义设置"
             },
             "0.0.4": {
                 "en": "initial release",
