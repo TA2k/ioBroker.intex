@@ -29,6 +29,9 @@ const WATER_JET_ON     =       0x08
 const BUBBLE_ON        =       0x10
 const SANITIZER_ON     =       0x20
 
+const controlChannel = 'control'
+
+
 class Intex extends utils.Adapter {
     /**
      * @param {Partial<utils.AdapterOptions>} [options={}]
@@ -62,6 +65,7 @@ class Intex extends utils.Adapter {
         this.session = {};
         this.commandObject = {};
         this.subscribeStates("*");
+        this.check = {};
         this.operation = { "PowerOnOff" : {iobrokerId: 'Power', typ : typOnOff, byteIndex: 0x05, boolBit: CONTROLLER_ON},
                            "JetOnOff" : {iobrokerId: 'Jet', typ : typOnOff, byteIndex: 0x05, boolBit: WATER_JET_ON},
                            "BubbleOnOff" : {iobrokerId: 'Bubble', typ : typOnOff, byteIndex: 0x05, boolBit: BUBBLE_ON},
@@ -70,7 +74,7 @@ class Intex extends utils.Adapter {
                            "SanitizerOnOff" : {iobrokerId: 'Sanitzer', typ : typOnOff, byteIndex: 0x05, boolBit: SANITIZER_ON},
                            "Refresh" : {typ : typRefresh},
                            "TempSet" : {iobrokerId: 'TargetTemperature', typ : typTemp, subOperation : "Temp", byteIndex: 0x0f},
-                           "Temp" : {iobrokerId: 'Temperature', typ : typTemp, subOperation : "Celsius" , byteIndex: 0x07},
+                           "Temp" : {iobrokerId: 'Temperature', typ : typTemp, subOperation : "Celsius" , byteIndex: 0x07, readonly: true},
                            "Celsius" : {iobrokerId: 'Celsius', typ : typCelsius, byteIndex: 0x0f, testFunc: function(val){return val <= 43 }},
                          }
         this.control = {};
@@ -117,9 +121,17 @@ class Intex extends utils.Adapter {
             });
     }
 
-    createOperation (device,operation) {
-      if (operation.subOperation) this.createOperation(device,this.operation[operation.subOperation])
-      let co = {write: true, read: true}
+    toFahrenheit(celsius) {
+      return Math.round(celsius * 1.8 + 32)
+    }
+
+    toCelsius(fahrenheit) {
+      return Math.round((fahrenheit - 32) / 1.8)
+    }
+
+    createOperation (device,operation,command) {
+      if (operation.subOperation) this.createOperation(device,this.operation[operation.subOperation],null)
+      let co = {write: !operation.readonly, read: true}
       switch (operation.typ) {
         case typOnOff: 
           co.type = "boolean";
@@ -127,7 +139,6 @@ class Intex extends utils.Adapter {
           break;
         case typRefresh: 
           co = false
-          this.refresh = operation
           break;
         case typTemp: 
           co.type = "number";
@@ -140,11 +151,12 @@ class Intex extends utils.Adapter {
       }
       if (co) {
         co.name = operation.iobrokerId
-        let id=device.deviceId + ".control." + operation.iobrokerId
+        let id=device.deviceId + "."+controlChannel+"." + operation.iobrokerId
         if (!this.control[device.deviceId]) this.control[device.deviceId] = {}
         if (!this.control[device.deviceId][operation.iobrokerId]) this.control[device.deviceId][operation.iobrokerId] = {}
         this.control[device.deviceId][operation.iobrokerId].operation = operation
         this.control[device.deviceId][operation.iobrokerId].id = id
+        this.control[device.deviceId][operation.iobrokerId].command = command
         this.setObjectNotExists(id, {
             type: "state",
             "common": co,
@@ -197,6 +209,13 @@ class Intex extends utils.Adapter {
                         },
                         native: {},
                     });
+                    await this.setObjectNotExistsAsync(device.deviceId + "." + controlChannel, {
+                        type: "channel",
+                        common: {
+                            name: "Remote Controls",
+                        },
+                        native: {},
+                    });
 
                     this.json2iob.parse(device.deviceId + ".general", device);
 
@@ -214,10 +233,10 @@ class Intex extends utils.Adapter {
                         .then((res) => {
                             this.log.debug(JSON.stringify(res.data));
                             for (const command of res.data) {
+                                //old start
                                 if (command.commandName === "Refresh") {
                                     this.commandObject[device.deviceId] = command.commandData;
                                 }
-                                //old start
                                 if (command.commandName == "TempSet") {
                                   this.setObjectNotExists(device.deviceId + ".remote." + command.commandName, {
                                       type: "state",
@@ -248,7 +267,7 @@ class Intex extends utils.Adapter {
                                 //new
                                 let operation=this.operation[command.commandName]
                                 if (operation) { 
-                                  this.createOperation(device,operation) 
+                                  this.createOperation(device,operation,command) 
                                 } else {
                                   this.log.warn("unknown commandName: "+command.commandName)
                                 }
@@ -326,7 +345,23 @@ class Intex extends utils.Adapter {
                                   if (control.operation.byteIndex) theValue = returnValue.readUInt8(control.operation.byteIndex)
                                   if (control.operation.boolBit) theValue = ((theValue & control.operation.boolBit) == control.operation.boolBit)
                                   if (control.operation.testFunc) theValue = control.operation.testFunc(theValue)
-                                  if (typeof theValue !== 'undefined') this.setState(control.id , theValue, true);
+                                  if (typeof theValue !== 'undefined') {
+                                    if (this.check[control.id]) {
+                                      if (this.check[control.id].val !== theValue) {
+                                        if (this.check[control.id].attempt <= 5) {
+                                          this.setState(control.id , this.check[control.id].val, false)
+                                        } else {
+                                          this.log.warn("Cannot set control " + control.id + " to " + this.check[control.id].val)
+                                          this.setState(control.id , theValue, true);
+                                          delete this.check[control.id]
+                                        }
+                                      } else {
+                                        delete this.check[control.id]
+                                      }
+                                    } else {
+                                      this.setState(control.id , theValue, true);
+                                    }
+                                  }
                                 }.bind(this));
                             }
                         })
@@ -479,49 +514,106 @@ class Intex extends utils.Adapter {
         */
         if (state) {
             if (!state.ack) {
-                const deviceId = id.split(".")[2];
-                const object = await this.getObjectAsync(id);
-                let objectData =  Buffer.from(object.common.name,'hex');
-                // <= 43 Celsius >=44 Farenheit
-                if (object.common.name === '8888050F0C') {
-                  if (((state.val >= 10 && state.val <= 40) || (state.val >= 50 && state.val <= 104)) && Math.round(state.val) == state.val) {
-                    objectData = Buffer.concat([objectData, Buffer.from([Math.round(state.val)])]);
-                  } else {
-                    this.log.warn("Value: "+state.val+" not in range 10..40 and 50..104 of integer")
-                  }
+                const splitid = id.split(".")
+                const deviceId = splitid[2];
+                const channelId = splitid[3];
+                const objId= splitid[4];
+                let objectData
+                if (this.control[deviceId] && (controlChannel == channelId) && this.control[deviceId][objId]) {
+                    let objctl = this.control[deviceId][objId]
+                    switch (objctl.operation.typ) {
+                        case typOnOff: 
+                            objectData =  Buffer.from(objctl.command.commandData,'hex');
+                            //erstmal das Timeout zurücksetzen es gibt gelich ein neues
+                            clearTimeout(this.refreshTimeout);
+                            const checkid = this.control[deviceId][objId].id
+                            if (!this.check[checkid] || this.check[checkid].val != state.val) {
+                              this.check[checkid] = {attempt : 1, val: state.val}
+                            } else {
+                              this.check[checkid].attempt++
+                            }
+                            if (state.val == state.oldVal) {
+                              clearTimeout(this.refreshTimeout);
+                              this.refreshTimeout = setTimeout(async () => {
+                                  await this.updateDevices();
+                              }, 10 * 1000);
+                              return
+                            }
+                            break;
+                        case typTemp: 
+                            objectData =  Buffer.from(objctl.command.commandData,'hex');
+                            if (((state.val >= 10 && state.val <= 40) || (state.val >= 50 && state.val <= 104)) && Math.round(state.val) == state.val) {
+                                objectData = Buffer.concat([objectData, Buffer.from([Math.round(state.val)])]);
+                            } else {
+                                this.log.warn("Value: "+state.val+" not in range 10..40 and 50..104 of integer")
+                                return
+                            }
+                            break;
+                        case typCelsius:
+                            if (this.control[deviceId]["TargetTemperature"]) {
+                                let target = this.control[deviceId]["TargetTemperature"]
+                                let targetState = await this.getStateAsync(target.id)
+                                if (state.val && !objctl.operation.testFunc(targetState.val)) {
+                                    targetState.val = this.toCelsius(targetState.val)
+                               } else if (!state.val && objctl.operation.testFunc(targetState.val)) {
+                                   targetState.val = this.toFahrenheit(targetState.val)
+                               }
+                               this.setState(target.id,targetState.val,false)
+                            }
+                            return;
+                            break;
+                        default:
+                           return;
+                    }
+                } else {
+                    const object = await this.getObjectAsync(id);
+                    let objectData =  Buffer.from(object.common.name,'hex');
+                    // <= 43 Celsius >=44 Fahrenheit
+                    if (object.common.name === '8888050F0C') {
+                      if (((state.val >= 10 && state.val <= 40) || (state.val >= 50 && state.val <= 104)) && Math.round(state.val) == state.val) {
+                        objectData = Buffer.concat([objectData, Buffer.from([Math.round(state.val)])]);
+                      } else {
+                        this.log.warn("Value: "+state.val+" not in range 10..40 and 50..104 of integer")
+                        return
+                      }
+                    }
                 }
                 let send=objectData.toString('hex') + Buffer.from([this.calcChecksum(objectData)]).toString('hex');
                 send = send.toUpperCase();
-                await this.requestClient({
-                    method: "post",
-                    url: "https://intexiotappservice.azurewebsites.net/api/v1/command/" + deviceId,
-                    headers: {
-                        "Content-Type": "application/json",
-                        Accept: "*/*",
-                        "User-Agent": "Intex/1.0.13 (iPhone; iOS 14.7; Scale/3.00)",
-                        "Accept-Language": "de-DE;q=1, en-DE;q=0.9",
-                        Authorization: "Bearer " + this.session.token,
-                    },
-                    data: JSON.stringify({
-                        sid: Date.now(),
-                        type: "1",
-                        data: send,
-                    }),
-                })
-                    .then((res) => {
-                        this.log.debug(JSON.stringify(res.data));
-                        return res.data;
-                    })
-                    .catch((error) => {
-                        this.log.error(error);
-                        if (error.response) {
-                            this.log.error(JSON.stringify(error.response.data));
-                        }
-                    });
                 clearTimeout(this.refreshTimeout);
-                this.refreshTimeout = setTimeout(async () => {
-                    await this.updateDevices();
-                }, 10 * 1000);
+                try {
+                  this.log.debug("send:"+send)
+                  await this.requestClient({
+                      method: "post",
+                      url: "https://intexiotappservice.azurewebsites.net/api/v1/command/" + deviceId,
+                      headers: {
+                          "Content-Type": "application/json",
+                          Accept: "*/*",
+                          "User-Agent": "Intex/1.0.13 (iPhone; iOS 14.7; Scale/3.00)",
+                          "Accept-Language": "de-DE;q=1, en-DE;q=0.9",
+                          Authorization: "Bearer " + this.session.token,
+                      },
+                      data: JSON.stringify({
+                          sid: Date.now(),
+                          type: "1",
+                          data: send,
+                      }),
+                  })
+                      .then((res) => {
+                          this.log.debug(JSON.stringify(res.data));
+                          return res.data;
+                      })
+                      .catch((error) => {
+                          this.log.error(error);
+                          if (error.response) {
+                              this.log.error(JSON.stringify(error.response.data));
+                          }
+                      });
+                } finally {
+                    this.refreshTimeout = setTimeout(async () => {
+                        await this.updateDevices();
+                    }, 10 * 1000);
+                }
             }
         }
     }
