@@ -26,6 +26,9 @@ https://forum.iobroker.net/topic/47932/test-intext-app-v0-0-x
 
 ## Changelog
 
+### 0.0.7
+* (PLCHome) Nach dem Schalten über Control kann  von der Cloud der vorherige Staus übermittelt. Dadurch kann es zu einem Toggeln des Zutands kommen.
+
 ### 0.0.6
 * (PLCHome) Definiertes Setzen von Zuständen
 * (PLCHome) Ändern Fahrenheit Celsius
