@@ -347,13 +347,16 @@ class Intex extends utils.Adapter {
                                   if (control.operation.testFunc) theValue = control.operation.testFunc(theValue)
                                   if (typeof theValue !== 'undefined') {
                                     if (this.check[control.id]) {
+                                      this.log.debug("Test set control " + control.id + " with " + this.check[control.id].val + " !== " + theValue + " / " + this.check[control.id].ti + " < " + res.data.sid)
                                       if (this.check[control.id].val !== theValue) {
-                                        if (this.check[control.id].attempt <= 5) {
-                                          this.setState(control.id , this.check[control.id].val, false)
-                                        } else {
-                                          this.log.warn("Cannot set control " + control.id + " to " + this.check[control.id].val)
-                                          this.setState(control.id , theValue, true);
-                                          delete this.check[control.id]
+                                        if (this.check[control.id].ti < res.data.sid) {
+                                          if (this.check[control.id].attempt <= 5) {
+                                            this.setState(control.id , this.check[control.id].val, false)
+                                          } else {
+                                            this.log.warn("Cannot set control " + control.id + " to " + this.check[control.id].val)
+                                            this.setState(control.id , theValue, true);
+                                            delete this.check[control.id]
+                                          }
                                         }
                                       } else {
                                         delete this.check[control.id]
@@ -528,7 +531,7 @@ class Intex extends utils.Adapter {
                             clearTimeout(this.refreshTimeout);
                             const checkid = this.control[deviceId][objId].id
                             if (!this.check[checkid] || this.check[checkid].val != state.val) {
-                              this.check[checkid] = {attempt : 1, val: state.val}
+                              this.check[checkid] = {attempt : 1, val: state.val, ti: Date.now()}
                             } else {
                               this.check[checkid].attempt++
                             }
