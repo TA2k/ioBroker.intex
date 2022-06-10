@@ -29,6 +29,14 @@ const WATER_JET_ON     =       0x08
 const BUBBLE_ON        =       0x10
 const SANITIZER_ON     =       0x20
 
+const HEADERS = {
+                  "Content-Type": "application/json",
+                  Accept: "*/*",
+                  "User-Agent": "Intex/1.0.13 (iPhone; iOS 14.8; Scale/3.00)",
+                  "Accept-Language": "de-DE;q=1, en-DE;q=0.9",
+                };
+const URL = "https://intexiotappservice.azurewebsites.net/"
+
 const controlChannel = 'control'
 
 
@@ -92,16 +100,16 @@ class Intex extends utils.Adapter {
             }, 1 * 60 * 60 * 1000); //1hour
         }
     }
+    
+    getHeadersAuth () {
+      return Object.assign(HEADERS, {Authorization: "Bearer " + this.session.token});
+    }
+    
     async login() {
         await this.requestClient({
             method: "post",
-            url: "https://intexiotappservice.azurewebsites.net/api/oauth/auth",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "*/*",
-                "User-Agent": "Intex/1.0.13 (iPhone; iOS 14.8; Scale/3.00)",
-                "Accept-Language": "de-DE;q=1, en-DE;q=0.9",
-            },
+            url: URL + "api/oauth/auth",
+            headers: HEADERS,
             data: JSON.stringify({
                 account: this.config.username,
                 password: new Buffer(this.config.password).toString("base64"),
@@ -168,14 +176,8 @@ class Intex extends utils.Adapter {
     async getDeviceList() {
         await this.requestClient({
             method: "get",
-            url: "https://intexiotappservice.azurewebsites.net/api/v1/userdevice/user",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "*/*",
-                "User-Agent": "Intex/1.0.13 (iPhone; iOS 14.8; Scale/3.00)",
-                "Accept-Language": "de-DE;q=1, en-DE;q=0.9",
-                Authorization: "Bearer " + this.session.token,
-            },
+            url: URL + "api/v1/userdevice/user",
+            headers: this.getHeadersAuth(),
         })
             .then(async (res) => {
                 this.log.debug(JSON.stringify(res.data));
@@ -221,14 +223,8 @@ class Intex extends utils.Adapter {
 
                     this.requestClient({
                         method: "get",
-                        url: "https://intexiotappservice.azurewebsites.net//api/v1/commandset/device/" + device.deviceId,
-                        headers: {
-                            "Content-Type": "application/json",
-                            Accept: "*/*",
-                            "User-Agent": "Intex/1.0.13 (iPhone; iOS 14.7; Scale/3.00)",
-                            "Accept-Language": "de-DE;q=1, en-DE;q=0.9",
-                            Authorization: "Bearer " + this.session.token,
-                        },
+                        url: URL + "/api/v1/commandset/device/" + device.deviceId,
+                        headers: this.getHeadersAuth(),
                     })
                         .then((res) => {
                             this.log.debug(JSON.stringify(res.data));
@@ -290,14 +286,8 @@ class Intex extends utils.Adapter {
             const sid = Date.now();
             await this.requestClient({
                 method: "post",
-                url: "https://intexiotappservice.azurewebsites.net/api/v1/command/" + deviceId,
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "*/*",
-                    "User-Agent": "Intex/1.0.13 (iPhone; iOS 14.7; Scale/3.00)",
-                    "Accept-Language": "de-DE;q=1, en-DE;q=0.9",
-                    Authorization: "Bearer " + this.session.token,
-                },
+                url: URL + "api/v1/command/" + deviceId,
+                headers: this.getHeadersAuth(),
                 data: JSON.stringify({
                     sid: sid,
                     type: "1",
@@ -309,14 +299,8 @@ class Intex extends utils.Adapter {
                     await this.sleep(20000);
                     await this.requestClient({
                         method: "GET",
-                        url: "https://intexiotappservice.azurewebsites.net/api/v1/device/command/feedback/" + deviceId + "/" + sid,
-                        headers: {
-                            "Content-Type": "application/json",
-                            Accept: "*/*",
-                            "User-Agent": "Intex/1.0.13 (iPhone; iOS 14.7; Scale/3.00)",
-                            "Accept-Language": "de-DE;q=1, en-DE;q=0.9",
-                            Authorization: "Bearer " + this.session.token,
-                        },
+                        url: URL + "api/v1/device/command/feedback/" + deviceId + "/" + sid,
+                        headers: this.getHeadersAuth(),
                     })
                         .then(async (res) => {
                             this.log.debug(JSON.stringify(res.data));
@@ -588,14 +572,8 @@ class Intex extends utils.Adapter {
                   this.log.debug("send:"+send)
                   await this.requestClient({
                       method: "post",
-                      url: "https://intexiotappservice.azurewebsites.net/api/v1/command/" + deviceId,
-                      headers: {
-                          "Content-Type": "application/json",
-                          Accept: "*/*",
-                          "User-Agent": "Intex/1.0.13 (iPhone; iOS 14.7; Scale/3.00)",
-                          "Accept-Language": "de-DE;q=1, en-DE;q=0.9",
-                          Authorization: "Bearer " + this.session.token,
-                      },
+                      url: URL + "api/v1/command/" + deviceId,
+                      headers: this.getHeadersAuth(),
                       data: JSON.stringify({
                           sid: Date.now(),
                           type: "1",
