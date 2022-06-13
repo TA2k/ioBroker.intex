@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "intex",
-        "version": "0.0.6",
+        "version": "0.0.7",
         "news": {
+            "0.0.7": {
+                "en": "Switching via remote works again.",
+                "de": "Umschalten über Remote funktioniert wieder.",
+                "ru": "Переключение через удаленные работы снова.",
+                "pt": "Mudar via trabalhos remotos novamente.",
+                "nl": "Verwisselen via afstandsbediening werkt weer.",
+                "fr": "Intervertir via des travaux distants à nouveau.",
+                "it": "Passare di nuovo attraverso lavori remoti.",
+                "es": "Cambiar a través de obras remotas de nuevo.",
+                "pl": "Zdarza się, że dzięki odległym działaniom.",
+                "zh-cn": "通过边远工程来解。."
+            },
             "0.0.6": {
                 "en": "Defined setting of states",
                 "de": "Definiertes Setzen von Zuständen",
