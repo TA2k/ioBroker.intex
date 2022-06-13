@@ -554,7 +554,7 @@ class Intex extends utils.Adapter {
                     }
                 } else {
                     const object = await this.getObjectAsync(id);
-                    let objectData =  Buffer.from(object.common.name,'hex');
+                    objectData =  Buffer.from(object.common.name,'hex');
                     // <= 43 Celsius >=44 Fahrenheit
                     if (object.common.name === '8888050F0C') {
                       if (((state.val >= 10 && state.val <= 40) || (state.val >= 50 && state.val <= 104)) && Math.round(state.val) == state.val) {
