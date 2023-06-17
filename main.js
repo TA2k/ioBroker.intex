@@ -394,8 +394,10 @@ class Intex extends utils.Adapter {
 
             client.on('data',async (data) => {
                 this.log.debug('updateLocalDevice: Received: ' + data.toString("utf-8"));
+                const res = {};
                 const jdata = JSON.parse(data.toString("utf-8"));
                 const returnValue = Buffer.from(jdata.data,'hex');
+                res.data = jdata;
 
                 //old start
                 for (let index = 0; index < returnValue.length; index += 1) {
@@ -449,7 +451,7 @@ class Intex extends utils.Adapter {
             });
 
             client.on('close', () => {
-                this.log.debug('rbd: Connection closed');
+                this.log.debug('updateLocalDevice: Connection closed');
             });
 
         }
