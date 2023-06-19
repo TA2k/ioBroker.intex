@@ -50,4 +50,43 @@ systemDictionary = {
         pl: "Interwał aktualizacji (w minutach)",
         "zh-cn": "更新间隔（分钟）",
     },
+    "Address only the pool in the local network without a cloud": {
+        "en": "Address only the pool in the local network without a cloud",
+        "de": "Adresse nur der Pool im lokalen Netzwerk ohne Cloud",
+        "ru": "Адрес только бассейн в локальной сети без облака",
+        "pt": "Morar apenas a piscina na rede local sem uma nuvem",
+        "nl": "Alleen het zwembad in het lokale netwerk zonder wolken",
+        "fr": "Adressez seulement la piscine du réseau local sans nuage",
+        "it": "Indirizzo solo la piscina nella rete locale senza cloud",
+        "es": "Dirija sólo la piscina en la red local sin una nube",
+        "pl": "Wybiera jedynie basen w lokalnej sieci bez chmury",
+        "uk": "Адреса тільки басейну в локальній мережі без хмари",
+        "zh-cn": "只处理当地网络中无云散的集合问题"
+    },
+    "Pool device address": {
+        "en": "Pool device address",
+        "de": "Adresse des Poolgerätes",
+        "ru": "Адрес устройства для бассейна",
+        "pt": "Endereço do dispositivo da associação",
+        "nl": "Pool",
+        "fr": "Adresse de l ' appareil de bord",
+        "it": "Indirizzo del dispositivo della piscina",
+        "es": "Dirección del dispositivo de la piscina",
+        "pl": "Adres Poolu",
+        "uk": "Статус на сервери",
+        "zh-cn": "D. 车辆处理"
+    },
+    "Don't try to address the local pool to get all the data from the cloud": {
+        "en": "Don't try to address the local pool to get all the data from the cloud",
+        "de": "Versuchen Sie nicht, den lokalen Pool ansprechen, um alle Daten aus der Cloud zu erhalten",
+        "ru": "Не пытайтесь адресовать местный бассейн, чтобы получить все данные из облака",
+        "pt": "Não tente abordar a piscina local para obter todos os dados da nuvem",
+        "nl": "Probeer het lokale zwembad niet aan te pakken om alle gegevens uit de cloud te krijgen",
+        "fr": "N'essayez pas d'adresser la piscine locale pour obtenir toutes les données du cloud",
+        "it": "Non cercare di affrontare la piscina locale per ottenere tutti i dati dal cloud",
+        "es": "No trate de dirigir la piscina local para obtener todos los datos de la nube",
+        "pl": "Don't stara się zaobserwować lokalną basen, aby uzyskać dane z chmury",
+        "uk": "Не намагайтеся звернутися до місцевого басейну, щоб отримати всі дані з хмари",
+        "zh-cn": "捐赠者设法解决当地集群的问题,以便从云叶收集所有数据。"
+    }
 };
