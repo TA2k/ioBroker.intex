@@ -87,7 +87,9 @@ class Intex extends utils.Adapter {
                          }
         this.control = {};
 
-        await this.login();
+        if (this.config.username) {
+            await this.login();
+        }
 
         if (this.session.token) {
             await this.getDeviceList();
@@ -98,6 +100,13 @@ class Intex extends utils.Adapter {
             this.refreshTokenInterval = setInterval(() => {
                 this.login();
             }, 1 * 60 * 60 * 1000); //1hour
+        }
+        if (this.config.hostname) {
+            await this.initLocalTree();
+            await this.updateLocalDevice();
+            this.updateInterval = setInterval(async () => {
+                await this.updateLocalDevice();
+            }, this.config.interval * 60 * 1000);
         }
     }
     
@@ -171,6 +180,91 @@ class Intex extends utils.Adapter {
             native: {},
         });
       }
+    }
+
+    async initLocalTree() {
+        let device = {};
+        device.deviceId = "localtcp";
+        await this.setObjectNotExistsAsync(device.deviceId, {
+            type: "device",
+            common: {
+                name: "localtcp",
+            },
+            native: {},
+        });
+        await this.setObjectNotExistsAsync(device.deviceId + ".remote", {
+            type: "channel",
+            common: {
+                name: "Remote Controls",
+            },
+            native: {},
+        });
+        await this.setObjectNotExistsAsync(device.deviceId + ".general", {
+            type: "channel",
+            common: {
+                name: "General Information",
+            },
+            native: {},
+        });
+        await this.setObjectNotExistsAsync(device.deviceId + ".status", {
+            type: "channel",
+            common: {
+                name: "Status values",
+            },
+            native: {},
+        });
+        await this.setObjectNotExistsAsync(device.deviceId + "." + controlChannel, {
+            type: "channel",
+            common: {
+                name: "Remote Controls",
+            },
+            native: {},
+        });
+
+        // fixed commandset 
+        let res = {};
+        res.data = JSON.parse('[{"id":18,"commandSetTypeId":3,"currentVersion":"1.8","commandSetType":"TESPA02","commandName":"PowerOnOff","commandData":"8888060F014000"},{"id":19,"commandSetTypeId":3,"currentVersion":"1.8","commandSetType":"TESPA02","commandName":"JetOnOff","commandData":"8888060F011000"},{"id":20,"commandSetTypeId":3,"currentVersion":"1.8","commandSetType":"TESPA02","commandName":"BubbleOnOff","commandData":"8888060F010400"},{"id":21,"commandSetTypeId":3,"currentVersion":"1.8","commandSetType":"TESPA02","commandName":"HeatOnOff","commandData":"8888060F010010"},{"id":22,"commandSetTypeId":3,"currentVersion":"1.8","commandSetType":"TESPA02","commandName":"FilterOnOff","commandData":"8888060F010004"},{"id":23,"commandSetTypeId":3,"currentVersion":"1.8","commandSetType":"TESPA02","commandName":"SanitizerOnOff","commandData":"8888060F010001"},{"id":24,"commandSetTypeId":3,"currentVersion":"1.8","commandSetType":"TESPA02","commandName":"Refresh","commandData":"8888060FEE0F01"},{"id":25,"commandSetTypeId":3,"currentVersion":"1.8","commandSetType":"TESPA02","commandName":"TempSet","commandData":"8888050F0C"}]');
+        for (const command of res.data) {
+            //old start
+            if (command.commandName === "Refresh") {
+                this.commandObject[device.deviceId] = command.commandData;
+            }
+            if (command.commandName == "TempSet") {
+              this.setObjectNotExists(device.deviceId + ".remote." + command.commandName, {
+                  type: "state",
+                  common: {
+                      name: command.commandData,
+                      type: "number",
+                      role: "value",
+                      write: true,
+                      read: true,
+                  },
+                  native: {},
+              });
+            } else {
+              this.setObjectNotExists(device.deviceId + ".remote." + command.commandName, {
+                  type: "state",
+                  common: {
+                      name: command.commandData,
+                      type: "boolean",
+                      role: "boolean",
+                      write: true,
+                      read: true,
+                  },
+                  native: {},
+              });
+            }
+            //old end
+            
+            //new
+            let operation=this.operation[command.commandName]
+            if (operation) { 
+              this.createOperation(device,operation,command) 
+            } else {
+              this.log.warn("unknown commandName: "+command.commandName)
+            }
+        }
+
     }
 
     async getDeviceList() {
@@ -279,6 +373,88 @@ class Intex extends utils.Adapter {
                 this.log.error(error);
                 error.response && this.log.error(JSON.stringify(error.response.data));
             });
+    }
+
+    async updateLocalDevice() {
+        if (this.config.hostname) {
+            const deviceId = "localtcp";
+            this.log.debug("fetching info from hostname:" + this.config.hostname);
+
+            var net = require('net');
+
+            var client = new net.Socket();
+            const sid = Date.now();
+            client.connect(8990, this.config.hostname, () => {
+                client.write(JSON.stringify({
+                    sid: String(sid),
+                    type: 1,
+                    data: "8888060FEE0F01DA",
+                }) + "\r\n");
+            });
+
+            client.on('data',async (data) => {
+                this.log.debug('updateLocalDevice: Received: ' + data.toString("utf-8"));
+                const res = {};
+                const jdata = JSON.parse(data.toString("utf-8"));
+                const returnValue = Buffer.from(jdata.data,'hex');
+                res.data = jdata;
+
+                //old start
+                for (let index = 0; index < returnValue.length; index += 1) {
+
+                    await this.setObjectNotExistsAsync(deviceId + ".status.value" + index, {
+                        type: "state",
+                        common: {
+                            role: "value",
+                            type: "number",
+                            write: false,
+                            read: false,
+                        },
+                        native: {},
+                    });
+
+                    this.setState(deviceId + ".status.value" + index, returnValue.readUInt8(index) , true);
+                }
+
+                Object.keys(this.control[deviceId]).forEach(function(key) {
+                    let control = this.control[deviceId][key];
+                    let theValue;
+                    if (control.operation.byteIndex) theValue = returnValue.readUInt8(control.operation.byteIndex)
+                    if (control.operation.boolBit) theValue = ((theValue & control.operation.boolBit) == control.operation.boolBit)
+                    if (control.operation.testFunc) theValue = control.operation.testFunc(theValue)
+                    if (typeof theValue !== 'undefined') {
+                        if (this.check[control.id]) {
+                            this.log.debug("Test set control " + control.id + " with " + this.check[control.id].val + " !== " + theValue + " / " + this.check[control.id].ti + " < " + res.data.sid)
+                            if (this.check[control.id].val !== theValue) {
+                                if (this.check[control.id].ti < res.data.sid) {
+                                    if (this.check[control.id].attempt <= 5) {
+                                        this.setState(control.id , this.check[control.id].val, false)
+                                    } else {
+                                        this.log.warn("Cannot set control " + control.id + " to " + this.check[control.id].val)
+                                        this.setState(control.id , theValue, true);
+                                        delete this.check[control.id]
+                                    }
+                                }
+                            } else {
+                                delete this.check[control.id]
+                            }
+                        } else {
+                            this.setState(control.id , theValue, true);
+                        }
+                    }
+                }.bind(this));
+
+                this.setState("info.connection", true, true);
+
+
+                client.destroy(); // kill client after server's response
+            });
+
+            client.on('close', () => {
+                this.log.debug('updateLocalDevice: Connection closed');
+            });
+
+        }
     }
 
     async updateDevices() {
@@ -429,6 +605,31 @@ class Intex extends utils.Adapter {
         }
     }
     
+    async sendLocalCommand(deviceId, send) {
+            var net = require('net');
+            var client = new net.Socket();
+            const sid = Date.now();
+            client.connect(8990, this.config.hostname, () => {
+                client.write(JSON.stringify({
+                    sid: String(sid),
+                    type: 1,
+                    data: send,
+                }) + "\r\n");
+            });
+
+            client.on('data',async (data) => {
+                this.log.debug('sendLocalCommand: Received: ' + data.toString("utf-8"));
+                const jdata = JSON.parse(data.toString("utf-8"));
+                const returnValue = Buffer.from(jdata.data,'hex');
+
+                client.destroy(); // kill client after server's response
+            });
+
+            client.on('close', () => {
+            });
+
+    }
+    
     /**
      * Is called if a subscribed state changes
      * @param {string} id
@@ -569,7 +770,14 @@ class Intex extends utils.Adapter {
                 send = send.toUpperCase();
                 clearTimeout(this.refreshTimeout);
                 try {
-                  this.log.debug("send:"+send)
+                  this.log.debug("send:"+send + " to:" + deviceId)
+                  if ("localtcp"==deviceId) {
+                    await this.sendLocalCommand(deviceId, send);
+                    this.refreshTimeout = setTimeout(async () => {
+                        await this.updateLocalDevice();
+                    }, 10 * 1000);
+                    return;
+                  }
                   await this.requestClient({
                       method: "post",
                       url: URL + "api/v1/command/" + deviceId,
