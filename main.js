@@ -10,6 +10,8 @@ const utils = require("@iobroker/adapter-core");
 const axios = require("axios");
 const Buffer = require('safe-buffer').Buffer
 const net = require('net');
+const dgram = require('dgram');
+
 const Json2iob = require("./lib/json2iob");
 
 // Load your modules here, e.g.:
@@ -53,6 +55,7 @@ class Intex extends utils.Adapter {
         this.on("ready", this.onReady.bind(this));
         this.on("stateChange", this.onStateChange.bind(this));
         this.on("unload", this.onUnload.bind(this));
+        this.on('message', this.onMessage.bind(this));
     }
 
     /**
@@ -73,6 +76,7 @@ class Intex extends utils.Adapter {
         this.deviceArray = [];
         this.session = {};
         this.commandObject = {};
+        this.localFehler = {};
         this.subscribeStates("*");
         this.check = {};
         this.operation = { "PowerOnOff" : {iobrokerId: 'Power', typ : typOnOff, byteIndex: 0x05, boolBit: CONTROLLER_ON},
@@ -87,14 +91,14 @@ class Intex extends utils.Adapter {
                            "Celsius" : {iobrokerId: 'Celsius', typ : typCelsius, byteIndex: 0x0f, testFunc: function(val){return val <= 43 }},
                          }
         this.control = {};
-
+        
         if (this.config.localonly) {
             await this.initLocalTree();
-            await this.updateLocalDevice();
+            await this.updateLocalDevice(this.config.hostname,this.config.hostport);
             this.log.debug('Interval');
             this.updateInterval = setInterval(async () => {
                 this.log.debug('do Interval');
-                await this.updateLocalDevice();
+                await this.updateLocalDevice(this.config.hostname,this.config.hostport);
             }, this.config.interval * 60 * 1000);
         } else if (this.config.username) {
             await this.login();
@@ -131,6 +135,7 @@ class Intex extends utils.Adapter {
                 this.log.debug(JSON.stringify(res.data));
 
                 this.setState("info.connection", true, true);
+                this.localFehler = {};
                 this.session = res.data;
             })
             .catch((error) => {
@@ -186,7 +191,7 @@ class Intex extends utils.Adapter {
     }
     
     async initDevice(device) {
-        return new Promise(async (resolve) => {
+        return new Promise((resolve) => {
           Promise.all([
                     this.setObjectNotExistsAsync(device.deviceId, {
                         type: "device",
@@ -227,7 +232,6 @@ class Intex extends utils.Adapter {
                       resolve()
                     })
         })
-        
     }
     
     parseDevice (device, res) {
@@ -323,81 +327,104 @@ class Intex extends utils.Adapter {
             });
     }
 
-    async updateLocalDevice(deviceId = "localtcp") {
-        this.log.debug("fetching info from hostname:" + this.config.hostname + ':' + this.config.hostport);
+    async updateLocalDevice(hostname, hostport, deviceId = "localtcp") {
+        return new Promise((resolve, reject) => {
+            this.log.debug("fetching info from hostname:" + hostname + ':' + hostport);
+            
+            var to = setTimeout(()=>{resolve(false)},5000);
+            var client = new net.Socket();
+            const sid = Date.now();
 
-        var client = new net.Socket();
-        const sid = Date.now();
+            client.on('data',async (data) => {
+                clearTimeout(to);
+                this.log.debug('updateLocalDevice: Received: ' + data.toString("utf-8"));
+                const res = {};
+                const jdata = JSON.parse(data.toString("utf-8"));
+                res.data = jdata;
+                this.parseUpdateDevices(deviceId,res);
+                client.destroy(); // kill client after server's response
+                resolve(true);
+            });
 
-        client.on('data',async (data) => {
-            this.log.debug('updateLocalDevice: Received: ' + data.toString("utf-8"));
-            const res = {};
-            const jdata = JSON.parse(data.toString("utf-8"));
-            res.data = jdata;
-            this.parseUpdateDevices(deviceId,res);
-            client.destroy(); // kill client after server's response
-        });
+            client.on('close', () => {
+                this.log.debug('updateLocalDevice: Connection closed');
+            });
 
-        client.on('close', () => {
-            this.log.debug('updateLocalDevice: Connection closed');
-        });
+            client.on('error', (error) => {
+                this.log.error(error);
+                clearTimeout(to);
+                resolve(false);
+            });
 
-        client.on('error', (error) => {
-            this.log.error(error);
-        });
-
-        client.connect(this.config.hostport, this.config.hostname, () => {
-            client.write(JSON.stringify({
-                sid: String(sid),
-                type: 1,
-                data: "8888060FEE0F01DA",
-            }) + "\r\n");
+            client.connect(hostport, hostname, () => {
+                client.write(JSON.stringify({
+                    sid: String(sid),
+                    type: 1,
+                    data: "8888060FEE0F01DA",
+                }) + "\r\n");
+            })
+            
+            
         })
     }
 
     async updateDevices() {
         this.deviceArray.forEach(async (deviceId) => {
-            const sid = Date.now();
-            await this.requestClient({
-                method: "post",
-                url: URL + "api/v1/command/" + deviceId,
-                headers: this.getHeadersAuth(),
-                data: JSON.stringify({
-                    sid: sid,
-                    type: "1",
-                    data: "8888060FEE0F01DA",
-                }),
-            })
-                .then(async (res) => {
-                    this.log.debug(JSON.stringify(res.data));
-                    await this.sleep(20000);
-                    await this.requestClient({
-                        method: "GET",
-                        url: URL + "api/v1/device/command/feedback/" + deviceId + "/" + sid,
-                        headers: this.getHeadersAuth(),
-                    })
-                        .then(async (res) => {
-                            this.log.debug(JSON.stringify(res.data));
-                            this.parseUpdateDevices(deviceId,res)
-                        })
-                        .catch((error) => {
-                            this.log.error(error);
-                            if (error.response) {
-                                this.log.error(JSON.stringify(error.response.data));
-                            }
-                        });
+            if (this.config.cloudonly) {
+              this.localFehler[deviceId] = this.config.cloudonly;
+            } else {
+              if(!this.localFehler[deviceId]) {
+                let [host,port] = await Promise.all([
+                     this.getStateAsync(deviceId+ ".general.ipAddress"),
+                     this.getStateAsync(deviceId+ ".general.port")
+                ]);
+                let OK = await this.updateLocalDevice(host.val,port.val,deviceId);
+                this.localFehler[deviceId] = !OK
+              }
+            }
+            if (this.localFehler[deviceId]) {
+                const sid = Date.now();
+                await this.requestClient({
+                    method: "post",
+                    url: URL + "api/v1/command/" + deviceId,
+                    headers: this.getHeadersAuth(),
+                    data: JSON.stringify({
+                        sid: sid,
+                        type: "1",
+                        data: "8888060FEE0F01DA",
+                    }),
                 })
-                .catch((error) => {
-                    if (error.response && error.response.status >= 500) {
-                        this.log.warn("Service not reachable");
-                        error.response && this.log.debug(JSON.stringify(error.response.data));
-                        return;
-                    }
-                    this.log.error(error);
-                    if (error.response) {
-                        this.log.error(JSON.stringify(error.response.data));
-                    }
-                });
+                    .then(async (res) => {
+                        this.log.debug(JSON.stringify(res.data));
+                        await this.sleep(20000);
+                        await this.requestClient({
+                            method: "GET",
+                            url: URL + "api/v1/device/command/feedback/" + deviceId + "/" + sid,
+                            headers: this.getHeadersAuth(),
+                        })
+                            .then(async (res) => {
+                                this.log.debug(JSON.stringify(res.data));
+                                this.parseUpdateDevices(deviceId,res)
+                            })
+                            .catch((error) => {
+                                this.log.error(error);
+                                if (error.response) {
+                                    this.log.error(JSON.stringify(error.response.data));
+                                }
+                            });
+                    })
+                    .catch((error) => {
+                        if (error.response && error.response.status >= 500) {
+                            this.log.warn("Service not reachable");
+                            error.response && this.log.debug(JSON.stringify(error.response.data));
+                            return;
+                        }
+                        this.log.error(error);
+                        if (error.response) {
+                            this.log.error(JSON.stringify(error.response.data));
+                        }
+                    });
+            }
         });
     }
     
@@ -422,36 +449,38 @@ class Intex extends utils.Adapter {
               this.setState(deviceId + ".status.value" + index, returnValue.readUInt8(index) , true);
           }
 
-          Object.keys(this.control[deviceId]).forEach(function(key) {
-              let control = this.control[deviceId][key];
-              let theValue;
-              if (control.operation.byteIndex) theValue = returnValue.readUInt8(control.operation.byteIndex)
-              if (control.operation.boolBit) theValue = ((theValue & control.operation.boolBit) == control.operation.boolBit)
-              if (control.operation.testFunc) theValue = control.operation.testFunc(theValue)
-              if (typeof theValue !== 'undefined') {
-                  if (this.check[control.id]) {
-                      this.log.debug("Test set control " + control.id + " with " + this.check[control.id].val + " !== " + theValue + " / " + this.check[control.id].ti + " < " + res.data.sid)
-                      if (this.check[control.id].val !== theValue) {
-                          if (this.check[control.id].ti < res.data.sid) {
-                              if (this.check[control.id].attempt <= 5) {
-                                  this.setState(control.id , this.check[control.id].val, false)
-                              } else {
-                                  this.log.warn("Cannot set control " + control.id + " to " + this.check[control.id].val)
-                                  this.setState(control.id , theValue, true);
-                                  delete this.check[control.id]
-                              }
-                          }
-                      } else {
-                          delete this.check[control.id]
-                          this.setState(control.id , theValue, true);
-                      }
-                  } else {
-                      this.setState(control.id , theValue, true);
-                  }
-              }
-          }.bind(this));
+          if (this.control[deviceId]) {
+            Object.keys(this.control[deviceId]).forEach(function(key) {
+                let control = this.control[deviceId][key];
+                let theValue;
+                if (control.operation.byteIndex) theValue = returnValue.readUInt8(control.operation.byteIndex)
+                if (control.operation.boolBit) theValue = ((theValue & control.operation.boolBit) == control.operation.boolBit)
+                if (control.operation.testFunc) theValue = control.operation.testFunc(theValue)
+                if (typeof theValue !== 'undefined') {
+                    if (this.check[control.id]) {
+                        this.log.debug("Test set control " + control.id + " with " + this.check[control.id].val + " !== " + theValue + " / " + this.check[control.id].ti + " < " + res.data.sid)
+                        if (this.check[control.id].val !== theValue) {
+                            if (this.check[control.id].ti < res.data.sid) {
+                                if (this.check[control.id].attempt <= 5) {
+                                    this.setState(control.id , this.check[control.id].val, false)
+                                } else {
+                                    this.log.warn("Cannot set control " + control.id + " to " + this.check[control.id].val)
+                                    this.setState(control.id , theValue, true);
+                                    delete this.check[control.id]
+                                }
+                            }
+                        } else {
+                            delete this.check[control.id]
+                            this.setState(control.id , theValue, true);
+                        }
+                    } else {
+                        this.setState(control.id , theValue, true);
+                    }
+                }
+            }.bind(this));
 
-          this.setState("info.connection", true, true);
+            this.setState("info.connection", true, true);
+          }
       }
     }
 
@@ -511,31 +540,38 @@ class Intex extends utils.Adapter {
         }
     }
     
-    async sendLocalCommand(deviceId, send) {
+    async sendLocalCommand(hostname, hostport, send) {
+        return new Promise((resolve, reject) => {
             var client = new net.Socket();
+            var to = setTimeout(()=>{resolve(false)},5000);
             const sid = Date.now();
             client.on('error', (error) => {
+                clearTimeout(to);
                 this.log.error(error);
+                resolve(false)
             });
 
             client.on('data',async (data) => {
+                clearTimeout(to);
                 this.log.debug('sendLocalCommand: Received: ' + data.toString("utf-8"));
                 const jdata = JSON.parse(data.toString("utf-8"));
                 const returnValue = Buffer.from(jdata.data,'hex');
 
                 client.destroy(); // kill client after server's response
+                resolve(true)
             });
 
             client.on('close', () => {
             });
 
-            client.connect(this.config.hostport, this.config.hostname, () => {
+            client.connect(hostport, hostname, () => {
                 client.write(JSON.stringify({
                     sid: String(sid),
                     type: 1,
                     data: send,
                 }) + "\r\n");
             });
+        });
     }
     
     /**
@@ -680,7 +716,14 @@ class Intex extends utils.Adapter {
                 try {
                   this.log.debug("send:"+send + " to:" + deviceId)
                   if (this.config.localonly) {
-                    await this.sendLocalCommand(deviceId, send);
+                    await this.sendLocalCommand(this.config.hostname, this.config.hostport, send);
+                  } else if (!(this.config.cloudonly) && !(this.localFehler[deviceId])) {
+                    let [host,port] = await Promise.all([
+                      this.getStateAsync(deviceId+ ".general.ipAddress"),
+                      this.getStateAsync(deviceId+ ".general.port")
+                    ]);
+                    let OK = await this.sendLocalCommand(host.val,port.val,send);
+                    this.localFehler[deviceId] = !OK
                   } else {
                     await this.requestClient({
                         method: "post",
@@ -717,6 +760,66 @@ class Intex extends utils.Adapter {
             }
         }
     }
+    
+    getPools(obj) {
+        const message = Buffer.from('spa_request'); 
+        const socket = dgram.createSocket('udp4');
+        const answer = [];
+        let to;
+        function wait(t) {
+            clearTimeout(to)
+            to = setTimeout(()=>{
+                socket.close();
+                t.sendTo(obj.from, obj.command, JSON.stringify(answer), obj.callback);
+            },5000)
+        }
+
+        socket.on('listening', function () {
+            socket.setBroadcast(true);
+            socket.send(message, 0, message.length, 10549, '255.255.255.255', function() {
+                this.log.debug('send '+message+' '+message.length)
+            }.bind(this));
+            wait(this);
+        }.bind(this));
+
+        socket.on('message', function (message, remote) {
+            this.log.debug('CLIENT RECEIVED: ', remote.address + ':' + remote.port +' - ' + message);
+            let msg={ip: remote.address };
+            try {
+              let msg=JSON.parse(message)
+            } catch (error) { }
+            answer.push(msg)
+            wait(this);
+        }.bind(this));
+
+        socket.on('error', function (message) {
+            this.log.debug(message);
+        }.bind(this));
+
+        wait(this);
+        socket.bind(10500);
+    }
+    
+    onMessage(obj) {
+        let wait = false;
+        this.log.debug(JSON.stringify(obj));
+        if (obj) {
+          switch (obj.command) {
+            case 'getPools':
+              wait = true;
+              this.getPools(obj);
+              break;
+            default:
+              this.log.warn(`Unknown command: ${obj.command}`);
+              return false;
+          }
+        }
+        if (!wait && obj.callback) {
+          this.sendTo(obj.from, obj.command, obj.message, obj.callback);
+        }
+        return true;
+    }
+
 }
 
 if (require.main !== module) {

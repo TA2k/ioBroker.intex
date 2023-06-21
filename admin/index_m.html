@@ -17,6 +17,19 @@
 
         <script type="text/javascript">
             // This will be called by the admin adapter when the settings page loads
+            function getPools() {
+                let callTimeout = setTimeout(() => {
+                    alert('The server did not respond to the request!');
+                }, 20000);
+                sendTo('intex.' + instance, 'getPools', '{}', function (result) {
+                    clearTimeout(callTimeout);
+                    console.log(result);
+                    $('#hostlist').empty()
+                    let r = JSON.parse(result);
+                    r.forEach((host) => {$('#hostlist').append(new Option(host.ip, "ip: "+host.ip))});
+                })
+            }
+            
             function load(settings, onChange) {
                 // example: select elements with id=key and class=value and insert value
                 if (!settings) return;
@@ -50,6 +63,12 @@
                   }
                 })
                 .trigger('change');
+
+                $('.getPools')
+                .on('click', function () {
+                   getPools();
+                });
+
                 onChange(false);
                 // reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
                 if (M) M.updateTextFields();
@@ -91,8 +110,15 @@
             
             <div class="row hostname">
                 <div class="col s6 input-field">
-                    <input type="text" class="value" id="hostname" />
+                    <input type="text" class="value " id="hostname" list="hostlist" />
+                    <datalist id="hostlist">
+                    </datalist>
                     <label for="hostname" class="translate">Pool device address</label>
+                </div>
+                <div class="col s1 input-field">
+                    <a class="btn-floating btn-small getPools" class="translate" title="find pools" data-lang-title="find pools">
+                        <i class="material-icons">search</i>
+                    </a>
                 </div>
             </div>
             <div class="row hostport">

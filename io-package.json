@@ -1,8 +1,21 @@
 {
     "common": {
         "name": "intex",
-        "version": "0.0.7",
+        "version": "0.1.0",
         "news": {
+            "0.1.0": {
+                "en": "Support local IP. Both via cloud and only locally without cloud.",
+                "de": "Unterstützt lokale IP. Sowohl über Cloud als auch nur lokal ohne Cloud.",
+                "ru": "Поддержка локального IP. Оба через облако и только локально без облака.",
+                "pt": "Suporte IP local. Ambos via nuvem e apenas localmente sem nuvem.",
+                "nl": "Steun lokale IP. Beide via wolk en alleen lokaal zonder wolk.",
+                "fr": "Appuyer l'IP locale. Par le nuage et seulement localement sans nuage.",
+                "it": "Supporto IP locale. Sia via cloud che solo localmente senza cloud.",
+                "es": "Soporte IP local. Tanto a través de la nube como localmente sin nube.",
+                "pl": "Wsparcie lokalnej IP. Zarówno przez chmurę, jak i tylko lokalnie bez chmur.",
+                "uk": "Підтримка локального IP. І через хмару і тільки локально без хмари.",
+                "zh-cn": "支持地方IP。 无论是通过云雾,还是当地都无云。."
+            },
             "0.0.7": {
                 "en": "Switching via remote works again.",
                 "de": "Umschalten über Remote funktioniert wieder.",
@@ -86,6 +99,8 @@
         "connectionType": "cloud",
         "dataSource": "poll",
         "materialize": true,
+        "messagebox": true,
+        "subscribe": "messagebox",
         "plugins": {
             "sentry": {
                 "dsn": "https://d220fa0b3fe04f9383cff271d232c3e7@sentry.iobroker.net/155"
@@ -111,7 +126,7 @@
     "native": {
         "username": "",
         "password": "",
-        "interval": 10,
+        "interval": 1,
         "hostname": "",
         "port": 8990,
         "localonly": false,
