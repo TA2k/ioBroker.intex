@@ -88,5 +88,18 @@ systemDictionary = {
         "pl": "Don't stara się zaobserwować lokalną basen, aby uzyskać dane z chmury",
         "uk": "Не намагайтеся звернутися до місцевого басейну, щоб отримати всі дані з хмари",
         "zh-cn": "捐赠者设法解决当地集群的问题,以便从云叶收集所有数据。"
+    },
+    "find pools": {
+        "en": "find pools",
+        "de": "pools finden",
+        "ru": "найти бассейны",
+        "pt": "encontrar piscinas",
+        "nl": "zoek zwembaden",
+        "fr": "trouver des piscines",
+        "it": "trovare piscine",
+        "es": "encontrar piscinas",
+        "pl": "zbiornik",
+        "uk": "знайти басейни",
+        "zh-cn": "寻找人才库"
     }
 };
