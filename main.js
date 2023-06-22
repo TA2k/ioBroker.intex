@@ -18,19 +18,22 @@ const Json2iob = require("./lib/json2iob");
 // const fs = require("fs");
 
 
-const typOnOff = 0x01;
+const typOnOff   = 0x01;
 const typRefresh = 0x02;
-const typTemp = 0x03;
+const typTemp    = 0x03;
 const typCelsius = 0x04;
 
+const CONTROLLER_ON    =       0x01;
+const FILTER_ON        =       0x02;
+const HEATER_ON        =       0x04;
+const WATER_JET_ON     =       0x08;
+const BUBBLE_ON        =       0x10;
+const SANITIZER_ON     =       0x20;
 
-
-const CONTROLLER_ON    =       0x01
-const FILTER_ON        =       0x02
-const HEATER_ON        =       0x04
-const WATER_JET_ON     =       0x08
-const BUBBLE_ON        =       0x10
-const SANITIZER_ON     =       0x20
+const STRATEGY_CLOUD_LOCAL_TEST = 1;
+const STRATEGY_CLOUD_LOCAL_ONLY = 2;
+const STRATEGY_CLOUD_ONLY       = 3;
+const STRATEGY_LOCAL_ONLY       = 4;
 
 const HEADERS = {
                   "Content-Type": "application/json",
@@ -64,6 +67,16 @@ class Intex extends utils.Adapter {
     async onReady() {
         // Reset the connection indicator during startup
         this.setState("info.connection", false, true);
+        if (isNaN(parseInt(this.config.hostport)) || parseInt(this.config.hostport)<1 || parseInt(this.config.hostport)>65535) {
+            this.config.hostport = 8990
+        } else {
+            this.config.hostport = parseInt(this.config.hostport)
+        }
+        if (isNaN(parseInt(this.config.strategy)) || parseInt(this.config.strategy)<1 || parseInt(this.config.strategy)>4) {
+            this.config.strategy = STRATEGY_CLOUD_LOCAL_TEST
+        } else {
+            this.config.strategy = parseInt(this.config.strategy)
+        }
         if (this.config.interval < 0.5) {
             this.log.info("Set interval to minimum 0.5");
             this.config.interval = 0.5;
@@ -92,15 +105,16 @@ class Intex extends utils.Adapter {
                          }
         this.control = {};
         
-        if (this.config.localonly) {
+        
+        this.log.debug('strategy: '+this.config.strategy);
+        if (this.config.strategy === STRATEGY_LOCAL_ONLY) {
             await this.initLocalTree();
             await this.updateLocalDevice(this.config.hostname,this.config.hostport);
             this.log.debug('Interval');
             this.updateInterval = setInterval(async () => {
-                this.log.debug('do Interval');
                 await this.updateLocalDevice(this.config.hostname,this.config.hostport);
             }, this.config.interval * 60 * 1000);
-        } else if (this.config.username) {
+        } else {
             await this.login();
         }
 
@@ -329,7 +343,7 @@ class Intex extends utils.Adapter {
 
     async updateLocalDevice(hostname, hostport, deviceId = "localtcp") {
         return new Promise((resolve, reject) => {
-            this.log.debug("fetching info from hostname:" + hostname + ':' + hostport);
+            this.log.debug("fetching info from hostname:" + hostname + ':' + hostport + 'for' + deviceId);
             
             var to = setTimeout(()=>{resolve(false)},5000);
             var client = new net.Socket();
@@ -356,22 +370,27 @@ class Intex extends utils.Adapter {
                 resolve(false);
             });
 
-            client.connect(hostport, hostname, () => {
-                client.write(JSON.stringify({
-                    sid: String(sid),
-                    type: 1,
-                    data: "8888060FEE0F01DA",
-                }) + "\r\n");
-            })
-            
-            
+            try {
+                client.connect(hostport, hostname, () => {
+                    client.write(JSON.stringify({
+                        sid: String(sid),
+                        type: 1,
+                        data: "8888060FEE0F01DA",
+                    }) + "\r\n");
+                })
+            } catch (error) {
+                this.log.error(error);
+                clearTimeout(to);
+                resolve(false);
+            }
+
         })
     }
 
     async updateDevices() {
         this.deviceArray.forEach(async (deviceId) => {
-            if (this.config.cloudonly) {
-              this.localFehler[deviceId] = this.config.cloudonly;
+            if (this.config.strategy === STRATEGY_CLOUD_ONLY) {
+              this.localFehler[deviceId] = true;
             } else {
               if(!this.localFehler[deviceId]) {
                 let [host,port] = await Promise.all([
@@ -379,7 +398,7 @@ class Intex extends utils.Adapter {
                      this.getStateAsync(deviceId+ ".general.port")
                 ]);
                 let OK = await this.updateLocalDevice(host.val,port.val,deviceId);
-                this.localFehler[deviceId] = !OK
+                this.localFehler[deviceId] = (this.config.strategy === STRATEGY_CLOUD_LOCAL_TEST) && !OK
               }
             }
             if (this.localFehler[deviceId]) {
@@ -542,6 +561,7 @@ class Intex extends utils.Adapter {
     
     async sendLocalCommand(hostname, hostport, send) {
         return new Promise((resolve, reject) => {
+            this.log.debug("send command to hostname:" + hostname + ':' + hostport);
             var client = new net.Socket();
             var to = setTimeout(()=>{resolve(false)},5000);
             const sid = Date.now();
@@ -564,13 +584,19 @@ class Intex extends utils.Adapter {
             client.on('close', () => {
             });
 
-            client.connect(hostport, hostname, () => {
-                client.write(JSON.stringify({
-                    sid: String(sid),
-                    type: 1,
-                    data: send,
-                }) + "\r\n");
-            });
+            try {
+              client.connect(hostport, hostname, () => {
+                  client.write(JSON.stringify({
+                      sid: String(sid),
+                      type: 1,
+                      data: send,
+                  }) + "\r\n");
+              });
+            } catch (error) {
+                this.log.error(error);
+                clearTimeout(to);
+                resolve(false);
+            }
         });
     }
     
@@ -715,46 +741,51 @@ class Intex extends utils.Adapter {
                 clearTimeout(this.refreshTimeout);
                 try {
                   this.log.debug("send:"+send + " to:" + deviceId)
-                  if (this.config.localonly) {
+                  if (this.config.strategy === STRATEGY_LOCAL_ONLY) {
                     await this.sendLocalCommand(this.config.hostname, this.config.hostport, send);
-                  } else if (!(this.config.cloudonly) && !(this.localFehler[deviceId])) {
-                    let [host,port] = await Promise.all([
-                      this.getStateAsync(deviceId+ ".general.ipAddress"),
-                      this.getStateAsync(deviceId+ ".general.port")
-                    ]);
-                    let OK = await this.sendLocalCommand(host.val,port.val,send);
-                    this.localFehler[deviceId] = !OK
                   } else {
-                    await this.requestClient({
-                        method: "post",
-                        url: URL + "api/v1/command/" + deviceId,
-                        headers: this.getHeadersAuth(),
-                        data: JSON.stringify({
-                            sid: Date.now(),
-                            type: "1",
-                            data: send,
-                        }),
-                    })
-                        .then((res) => {
-                            this.log.debug(JSON.stringify(res.data));
-                            return res.data;
-                        })
-                        .catch((error) => {
-                            this.log.error(error);
-                            if (error.response) {
-                                this.log.error(JSON.stringify(error.response.data));
-                            }
-                        });
+                      if (this.config.strategy === STRATEGY_CLOUD_ONLY) {
+                          this.localFehler[deviceId] = true;
+                      } else {
+                          let [host,port] = await Promise.all([
+                            this.getStateAsync(deviceId+ ".general.ipAddress"),
+                            this.getStateAsync(deviceId+ ".general.port")
+                          ]);
+                          let OK = await this.sendLocalCommand(host.val,port.val,send);
+                         this.localFehler[deviceId] = (this.config.strategy === STRATEGY_CLOUD_LOCAL_TEST) && !OK
+                      }
+                      if (this.localFehler[deviceId]) {
+                          await this.requestClient({
+                              method: "post",
+                              url: URL + "api/v1/command/" + deviceId,
+                              headers: this.getHeadersAuth(),
+                              data: JSON.stringify({
+                                  sid: Date.now(),
+                                  type: "1",
+                                  data: send,
+                              }),
+                          })
+                              .then((res) => {
+                                  this.log.debug(JSON.stringify(res.data));
+                                  return res.data;
+                              })
+                              .catch((error) => {
+                                  this.log.error(error);
+                                  if (error.response) {
+                                      this.log.error(JSON.stringify(error.response.data));
+                                  }
+                              });
+                      }
                   }
                 } finally {
-                    if (this.config.localonly) {
+                    if (this.config.strategy === STRATEGY_LOCAL_ONLY) {
                       this.refreshTimeout = setTimeout(async () => {
-                          await this.updateLocalDevice();
+                          await this.updateLocalDevice(this.config.hostname,this.config.hostport);
                       }, 1 * 1000);
                     } else {
                       this.refreshTimeout = setTimeout(async () => {
                           await this.updateDevices();
-                      }, 10 * 1000);
+                      }, (!this.localFehler[deviceId]?1:10) * 1000);
                     }
                 }
             }

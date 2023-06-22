@@ -7,31 +7,57 @@
 ![Current version in stable repository](https://iobroker.live/badges/intex-stable.svg)
 [![Dependency Status](https://img.shields.io/david/TA2k/iobroker.intex.svg)](https://david-dm.org/TA2k/iobroker.intex)
 
-[![NPM](https://nodei.co/npm/iobroker.intex.png?downloads=true)](https://nodei.co/npm/iobroker.intex/)
 
 **Tests:** ![Test and Release](https://github.com/TA2k/ioBroker.intex/workflows/Test%20and%20Release/badge.svg)
 
 ## intex adapter for ioBroker
 
-Adapter for Intex Whirlpool with wifi modul 
+Adapter for Intex Whirlpool with wifi modul
 
-## Loginablauf:
+## Die Strategie, wie man mit dem Pool und der Cloud kommunizieren kann
+
+### Über Cloud
+
+#### Cloud sekundär; Pool lokal, falls vorhanden
+
+Bei diesem Modus versucht das System den Steuerbefehl und Updatebefehl lokal abzusetzen. Sollte ein Fehler bei der lokalen Kommunikation auftreten, wechselt das System in den Cloudbetrieb bis zum nächsten Start des Adapters.
+
+IP-Adresse und Port kommen aus der Cloud. Sollte sie IP-Adresse fach sein, muss der Pool in der App neu angemeldet werden. Verbindungstaste lang drücken und den Pool suchen. Ein Löschen aus der App ist normalerweise nicht nötig.
+
+#### Cloud sekundär; Pool nur lokal
+
+Bei diesem Modus setzet das System den Steuerbefehl und Updatebefehl lokal ab. Sollte ein Fehler bei der lokalen Kommunikation auftreten, wechselt das System nicht in den Cloudbetrieb.
+
+Das Intervall kann hier auf 0.5 Minute gesetzt werden.
+
+IP-Adresse und Port kommen aus der Cloud. Sollte sie IP-Adresse fach sein, muss der Pool in der App neu angemeldet werden. Verbindungstaste lang drücken und den Pool suchen. Ein Löschen aus der App ist normalerweise nicht nötig.
+
+#### Nur Cloud
+
+Bei diesem Modus setzet das System den Steuerbefehl und Updatebefehl nur über die Cloud ab.
+
+
+##### Loginablauf:
 
 Die Intex App Mail und Passwort eingeben.
 
+### Lokal
+
+#### Nur lokal
+
+Im lokalen Betrieb werden aktuell auch Funktionen angeboten, die der Pool nicht unterstützt. Hier mus unter Adresse entweder der DNS-Name des Pools beim Router oder die IP-Adresse des Pools angegeben werden.
+
+Das Intervall kann hier ebenfalls auf 0.5 Minute gesetzt werden.
+
+Die IP-Adresse des Pools kann über den Suchbutton gesucht werden. Dieses kann allerdings von Router Unterbundnen werden, wenn z. B. WLAN Geräte nicht untereinander kommunizieren dürfen oder in der lokalen Firewall des Rechners Ports oder Bordcasting gesperrt ist.
 
 ## Steuern
+
 intex.0.<id>.remote auf true setzen steuert den jeweiligen Befehl.
+
 intex.0.<id>.control auf true oder false setzen, steuert den Pool Befehl in den Zustand.
 
-## Lokal
 
-Bei Cloudbetrieb versucht das System den Befehl lokal abzusetzen, es sei denn, es ist nur Cloud angegeben. Sollte ein Fehler auftreten, wechselt das System wieder in den Cloudbetrieb bis zum nächsten Start des Adapters.
-
-Im lokal Betreib werden aktuell auch Funktionen angeboten, die der Pool nicht unterstützt. Hier mus unter Adresse entweder der DNS-Name des Pools beim Router oder die IP-Adresse des Pools angegeben werden.
-Das Intervall kann hier auf eine Minute gesetzt werden.
-
-Dieses kann über den Suchbutton gesucht werden. Dieses kann allerdings von Router Unterbundnen werden, wenn z. B. WLAN Geräte nicht untereinander kommunizieren dürfen oder in der lokalen Firewall des Rechners Ports oder Bordcasting gesperrt ist.
 
 ## Diskussion und Fragen:
 https://forum.iobroker.net/topic/47932/test-intext-app-v0-0-x
@@ -61,7 +87,7 @@ https://forum.iobroker.net/topic/47932/test-intext-app-v0-0-x
 ## License
 MIT License
 
-Copyright (c) 2022 TA2k <tombox2020@gmail.com>
+Copyright (c) 2021 - 2023 TA2k <tombox2020@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
