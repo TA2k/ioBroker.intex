@@ -26,6 +26,7 @@
                 "it": "Passare di nuovo attraverso lavori remoti.",
                 "es": "Cambiar a través de obras remotas de nuevo.",
                 "pl": "Zdarza się, że dzięki odległym działaniom.",
+                "uk": "Switching via remote works again.",
                 "zh-cn": "通过边远工程来解。."
             },
             "0.0.6": {
@@ -38,6 +39,7 @@
                 "it": "Impostazione definita degli stati",
                 "es": "Configuración definida de estados",
                 "pl": "Zdefiniowane ustawienie stanów",
+                "uk": "Defined setting of states",
                 "zh-cn": "状态的定义设置"
             },
             "0.0.4": {
@@ -50,10 +52,10 @@
                 "it": "Versione iniziale",
                 "es": "Versión inicial",
                 "pl": "Pierwsze wydanie",
+                "uk": "initial release",
                 "zh-cn": "首次出版"
             }
         },
-        "title": "Intex",
         "titleLang": {
             "en": "Intex",
             "de": "Intex",
@@ -64,6 +66,7 @@
             "it": "Intex",
             "es": "Intex",
             "pl": "Intex",
+            "uk": "Intex",
             "zh-cn": "国际展览中心"
         },
         "desc": {
@@ -76,6 +79,7 @@
             "it": "Adattatore per Intex Whirlpool",
             "es": "Adaptador para bañera de hidromasaje Intex",
             "pl": "Adapter do Intex Whirlpool",
+            "uk": "Adapter do Intex Whirlpool",
             "zh-cn": "Intex Whirlpool 适配器"
         },
         "authors": [
@@ -129,8 +133,7 @@
         "interval": 1,
         "hostname": "",
         "port": 8990,
-        "localonly": false,
-        "cloudonly": false
+        "strategy" : 1
     },
     "objects": [],
     "instanceObjects": [

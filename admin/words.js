@@ -12,6 +12,7 @@ systemDictionary = {
         it: "Impostazioni dell'adattatore per intex",
         es: "Ajustes del adaptador para intex",
         pl: "Ustawienia adaptera dla intex",
+        "uk": "налаштування адаптера intex",
         "zh-cn": "intex的适配器设置",
     },
     "App Email": {
@@ -24,6 +25,7 @@ systemDictionary = {
         it: "E-mail dell'app",
         es: "Correo electrónico de la aplicación",
         pl: "E-mail aplikacji",
+        "uk": "Електронна пошта",
         "zh-cn": "应用电子邮件",
     },
     "App Password": {
@@ -36,6 +38,7 @@ systemDictionary = {
         it: "Password dell'app",
         es: "Contraseña de la aplicación",
         pl: "Hasło do aplikacji",
+        "uk": "Ім'я користувача",
         "zh-cn": "应用密码",
     },
     "Update interval (in minutes)": {
@@ -48,20 +51,8 @@ systemDictionary = {
         it: "Intervallo di aggiornamento (in minuti)",
         es: "Intervalo de actualización (en minutos)",
         pl: "Interwał aktualizacji (w minutach)",
+        "uk": "Проміжок оновлення (в хвилини)",
         "zh-cn": "更新间隔（分钟）",
-    },
-    "Address only the pool in the local network without a cloud": {
-        "en": "Address only the pool in the local network without a cloud",
-        "de": "Adresse nur der Pool im lokalen Netzwerk ohne Cloud",
-        "ru": "Адрес только бассейн в локальной сети без облака",
-        "pt": "Morar apenas a piscina na rede local sem uma nuvem",
-        "nl": "Alleen het zwembad in het lokale netwerk zonder wolken",
-        "fr": "Adressez seulement la piscine du réseau local sans nuage",
-        "it": "Indirizzo solo la piscina nella rete locale senza cloud",
-        "es": "Dirija sólo la piscina en la red local sin una nube",
-        "pl": "Wybiera jedynie basen w lokalnej sieci bez chmury",
-        "uk": "Адреса тільки басейну в локальній мережі без хмари",
-        "zh-cn": "只处理当地网络中无云散的集合问题"
     },
     "Pool device address": {
         "en": "Pool device address",
@@ -76,22 +67,22 @@ systemDictionary = {
         "uk": "Статус на сервери",
         "zh-cn": "D. 车辆处理"
     },
-    "Don't try to address the local pool to get all the data from the cloud": {
-        "en": "Don't try to address the local pool to get all the data from the cloud",
-        "de": "Versuchen Sie nicht, den lokalen Pool ansprechen, um alle Daten aus der Cloud zu erhalten",
-        "ru": "Не пытайтесь адресовать местный бассейн, чтобы получить все данные из облака",
-        "pt": "Não tente abordar a piscina local para obter todos os dados da nuvem",
-        "nl": "Probeer het lokale zwembad niet aan te pakken om alle gegevens uit de cloud te krijgen",
-        "fr": "N'essayez pas d'adresser la piscine locale pour obtenir toutes les données du cloud",
-        "it": "Non cercare di affrontare la piscina locale per ottenere tutti i dati dal cloud",
-        "es": "No trate de dirigir la piscina local para obtener todos los datos de la nube",
-        "pl": "Don't stara się zaobserwować lokalną basen, aby uzyskać dane z chmury",
-        "uk": "Не намагайтеся звернутися до місцевого басейну, щоб отримати всі дані з хмари",
-        "zh-cn": "捐赠者设法解决当地集群的问题,以便从云叶收集所有数据。"
+    "Pool port address": {
+        "en": "Pool port address",
+        "de": "Adresse des Hafens",
+        "ru": "Адрес порта бассейна",
+        "pt": "Endereço da porta da piscina",
+        "nl": "Pool Port",
+        "fr": "Adresse du port de la piscine",
+        "it": "Indirizzo della porta della piscina",
+        "es": "Dirección portuaria de piscina",
+        "pl": "Port",
+        "uk": "Карта сайту",
+        "zh-cn": "Pool港口地址"
     },
     "find pools": {
         "en": "find pools",
-        "de": "pools finden",
+        "de": "Pools finden",
         "ru": "найти бассейны",
         "pt": "encontrar piscinas",
         "nl": "zoek zwembaden",
@@ -101,5 +92,70 @@ systemDictionary = {
         "pl": "zbiornik",
         "uk": "знайти басейни",
         "zh-cn": "寻找人才库"
+    },
+    "The strategy of how to communicate with the pool and the cloud": {
+        "en": "The strategy of how to communicate with the pool and the cloud",
+        "de": "Die Strategie, wie man mit dem Pool und der Cloud kommunizieren kann",
+        "ru": "Стратегия как общаться с бассейном и облаком",
+        "pt": "A estratégia de como se comunicar com a piscina e a nuvem",
+        "nl": "De strategie om te communiceren met het zwembad en de wolk",
+        "fr": "La stratégie de communication avec la piscine et le nuage",
+        "it": "La strategia di come comunicare con la piscina e il cloud",
+        "es": "La estrategia de cómo comunicarse con la piscina y la nube",
+        "pl": "Strategia komunikacji z basenem i chmurą",
+        "uk": "Стратегія спілкування з басейном і хмарою",
+        "zh-cn": "如何与该集合和云雾传播战略"
+    },
+    "Cloud secondary; Pool local if available": {
+        "en": "Cloud secondary; Pool local if available",
+        "de": "Cloud sekundär; Pool lokal, falls vorhanden",
+        "ru": "Облачные вторичные; Бассейн местный если доступный",
+        "pt": "Secundário da nuvem; Piscina local se disponível",
+        "nl": "Cloud secundaire; Pool lokaal",
+        "fr": "Cloud secondaire; Piscine locale si disponible",
+        "it": "Nuvola secondaria; Piscina locale se disponibile",
+        "es": "Cloud secondary; Piscina local si está disponible",
+        "pl": "Chmury wtórne Poolnie, jeśli jest dostępne",
+        "uk": "Хмар вторинний; Басейн місцевий, якщо є",
+        "zh-cn": "Cloud 其次; 地方"
+    },
+    "Cloud secondary; Pool only local": {
+        "en": "Cloud secondary; Pool only local",
+        "de": "Cloud sekundär; Pool nur lokal",
+        "ru": "Облачные вторичные; Бассейн только местный",
+        "pt": "Secundário da nuvem; Piscina apenas local",
+        "nl": "Cloud secundaire; Pool",
+        "fr": "Cloud secondaire; Piscine seulement locale",
+        "it": "Nuvola secondaria; Piscina solo locale",
+        "es": "Cloud secondary; Piscina sólo local",
+        "pl": "Chmury wtórne Lokalnie",
+        "uk": "Хмар вторинний; Басейн тільки місцевий",
+        "zh-cn": "Cloud 其次; 仅当地"
+    },
+    "Only cloud": {
+        "en": "Only cloud",
+        "de": "Nur Cloud",
+        "ru": "Только облако",
+        "pt": "Apenas nuvem",
+        "nl": "♪",
+        "fr": "Seulement nuage",
+        "it": "Solo cloud",
+        "es": "Sólo nube",
+        "pl": "Tylko chmury",
+        "uk": "Невелика хмарність",
+        "zh-cn": "只剩下阴影"
+    },
+    "Only local": {
+        "en": "Only local",
+        "de": "Nur lokal",
+        "ru": "Только местные",
+        "pt": "Apenas local",
+        "nl": "Alleen",
+        "fr": "Seulement local",
+        "it": "Solo locali",
+        "es": "Sólo local",
+        "pl": "Tylko lokalny",
+        "uk": "Тільки локальні",
+        "zh-cn": "只在地方"
     }
 };
