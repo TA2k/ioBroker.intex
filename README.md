@@ -53,9 +53,9 @@ The IP address of the pool can be searched for using the search button. However,
 
 ## Controlling the functions of the spa
 
-"intex.0.<id>.remote.<command>" set to true controls the respective command.
+"intex.0.-id-.remote.-command-" set to true controls the respective command.
 
-"intex.0.<id>.control.<command>" set to true or false controls the pool command's state.
+"intex.0.-id-.control.-command-" set to true or false controls the pool command's state.
 
 
 
