@@ -37,7 +37,7 @@ IP address and port come from the cloud. If the IP address is the same, the pool
 In this mode, the system only sends the control command and update command via the cloud.
 
 
-##### Llogin
+##### Login
 
 Enter the Intex app mail and password.
 
