@@ -22,6 +22,7 @@ const typOnOff   = 0x01;
 const typRefresh = 0x02;
 const typTemp    = 0x03;
 const typCelsius = 0x04;
+const typTime    = 0x05;
 
 const CONTROLLER_ON    =       0x01;
 const FILTER_ON        =       0x02;
@@ -96,9 +97,11 @@ class Intex extends utils.Adapter {
                            "JetOnOff" : {iobrokerId: 'Jet', typ : typOnOff, byteIndex: 0x05, boolBit: WATER_JET_ON},
                            "BubbleOnOff" : {iobrokerId: 'Bubble', typ : typOnOff, byteIndex: 0x05, boolBit: BUBBLE_ON},
                            "HeatOnOff" : {iobrokerId: 'Heat', typ : typOnOff, byteIndex: 0x05, boolBit: HEATER_ON},
-                           "FilterOnOff" : {iobrokerId: 'Filter', typ : typOnOff, byteIndex: 0x05, boolBit: FILTER_ON},
-                           "SanitizerOnOff" : {iobrokerId: 'Sanitzer', typ : typOnOff, byteIndex: 0x05, boolBit: SANITIZER_ON},
-                           "Refresh" : {typ : typRefresh},
+                           "FilterOnOff" : {iobrokerId: 'Filter', typ : typOnOff, subOperation : "FilterTime", byteIndex: 0x05, boolBit: FILTER_ON},
+                           "FilterTime" : {iobrokerId: 'FilterTime', typ : typTime, byteIndex: 0x05, boolBit: FILTER_ON, valueByteIndex: 0x0C, valueFunc: function(test,val){return (!test)?0:(val & 0b1111)*0.5+1 }, readonly: true},
+                           "SanitizerOnOff" : {iobrokerId: 'Sanitzer', typ : typOnOff, subOperation : "SanitizerTime", byteIndex: 0x05, boolBit: SANITIZER_ON},
+                           "SanitizerTime" : {iobrokerId: 'SanitzerTime', typ : typTime, byteIndex: 0x05, boolBit: SANITIZER_ON, valueByteIndex: 0x0D, valueFunc: function(test,val){return (!test)?0:(val & 0b1111)*0.5+1 }, readonly: true},
+                           "Refresh" : {iobrokerId: 'Refresh', typ : typRefresh, testFunc: function(val){return true}},
                            "TempSet" : {iobrokerId: 'TargetTemperature', typ : typTemp, subOperation : "Temp", byteIndex: 0x0f},
                            "Temp" : {iobrokerId: 'Temperature', typ : typTemp, subOperation : "Celsius" , byteIndex: 0x07, readonly: true},
                            "Celsius" : {iobrokerId: 'Celsius', typ : typCelsius, byteIndex: 0x0f, testFunc: function(val){return val <= 43 }},
@@ -177,7 +180,9 @@ class Intex extends utils.Adapter {
           co.role = "switch.power";
           break;
         case typRefresh: 
-          co = false
+          co.type = "boolean";
+          co.role = "value";
+          //co = false
           break;
         case typTemp: 
           co.type = "number";
@@ -186,6 +191,10 @@ class Intex extends utils.Adapter {
         case typCelsius:
           co.type = "boolean";
           co.role = "indicator";
+          break;
+        case typTime:
+          co.type = "number";
+          co.role = "value.interval";
           break;
       }
       if (co) {
@@ -214,6 +223,8 @@ class Intex extends utils.Adapter {
                         },
                         native: {},
                     }),
+                    this.delObjectAsync(device.deviceId + ".remote", { recursive: true }),
+                    /*
                     this.setObjectNotExistsAsync(device.deviceId + ".remote", {
                         type: "channel",
                         common: {
@@ -221,6 +232,7 @@ class Intex extends utils.Adapter {
                         },
                         native: {},
                     }),
+                    */
                     this.setObjectNotExistsAsync(device.deviceId + ".general", {
                         type: "channel",
                         common: {
@@ -250,6 +262,7 @@ class Intex extends utils.Adapter {
     
     parseDevice (device, res) {
       for (const command of res.data) {
+          /*
           //old start
           if (command.commandName === "Refresh") {
               this.commandObject[device.deviceId] = command.commandData;
@@ -280,7 +293,7 @@ class Intex extends utils.Adapter {
             });
           }
           //old end
-          
+          */
           //new
           let operation=this.operation[command.commandName]
           if (operation) { 
@@ -475,6 +488,7 @@ class Intex extends utils.Adapter {
                 if (control.operation.byteIndex) theValue = returnValue.readUInt8(control.operation.byteIndex)
                 if (control.operation.boolBit) theValue = ((theValue & control.operation.boolBit) == control.operation.boolBit)
                 if (control.operation.testFunc) theValue = control.operation.testFunc(theValue)
+                if (control.operation.valueFunc) theValue = control.operation.valueFunc(theValue,returnValue.readUInt8(control.operation.valueByteIndex))
                 if (typeof theValue !== 'undefined') {
                     if (this.check[control.id]) {
                         this.log.debug("Test set control " + control.id + " with " + this.check[control.id].val + " !== " + theValue + " / " + this.check[control.id].ti + " < " + res.data.sid)
@@ -680,7 +694,7 @@ class Intex extends utils.Adapter {
                 if (this.control[deviceId] && (controlChannel == channelId) && this.control[deviceId][objId]) {
                     let objctl = this.control[deviceId][objId]
                     switch (objctl.operation.typ) {
-                        case typOnOff: 
+                        case typOnOff, typRefresh: 
                             objectData =  Buffer.from(objctl.command.commandData,'hex');
                             //erstmal das Timeout zurücksetzen es gibt gelich ein neues
                             clearTimeout(this.refreshTimeout);
@@ -723,7 +737,7 @@ class Intex extends utils.Adapter {
                         default:
                            return;
                     }
-                } else {
+                }/* else {
                     const object = await this.getObjectAsync(id);
                     objectData =  Buffer.from(object.common.name,'hex');
                     // <= 43 Celsius >=44 Fahrenheit
@@ -735,7 +749,7 @@ class Intex extends utils.Adapter {
                         return
                       }
                     }
-                }
+                }*/
                 let send=objectData.toString('hex') + Buffer.from([this.calcChecksum(objectData)]).toString('hex');
                 send = send.toUpperCase();
                 clearTimeout(this.refreshTimeout);
