@@ -36,6 +36,12 @@ const STRATEGY_CLOUD_LOCAL_ONLY = 2;
 const STRATEGY_CLOUD_ONLY       = 3;
 const STRATEGY_LOCAL_ONLY       = 4;
 
+const BYTE_STATUS              = 0x05;
+const BYTE_TARGET_TEMPERATURE  = 0x0f;
+const BYTE_TEMPERATURE         = 0x07;
+const BYTE_TIME_SANITIZER      = 0x0d;
+const BYTE_TIME_FILTER         = 0x0c;
+
 const HEADERS = {
                   "Content-Type": "application/json",
                   Accept: "*/*",
@@ -93,18 +99,18 @@ class Intex extends utils.Adapter {
         this.localFehler = {};
         this.subscribeStates("*");
         this.check = {};
-        this.operation = { "PowerOnOff" : {iobrokerId: 'Power', typ : typOnOff, byteIndex: 0x05, boolBit: CONTROLLER_ON},
-                           "JetOnOff" : {iobrokerId: 'Jet', typ : typOnOff, byteIndex: 0x05, boolBit: WATER_JET_ON},
-                           "BubbleOnOff" : {iobrokerId: 'Bubble', typ : typOnOff, byteIndex: 0x05, boolBit: BUBBLE_ON},
-                           "HeatOnOff" : {iobrokerId: 'Heat', typ : typOnOff, byteIndex: 0x05, boolBit: HEATER_ON},
-                           "FilterOnOff" : {iobrokerId: 'Filter', typ : typOnOff, subOperation : "FilterTime", byteIndex: 0x05, boolBit: FILTER_ON},
-                           "FilterTime" : {iobrokerId: 'FilterTime', typ : typTime, byteIndex: 0x05, boolBit: FILTER_ON, valueByteIndex: 0x0C, valueFunc: function(test,val){return (!test)?0:(val & 0b1111)*0.5+1 }, readonly: true},
-                           "SanitizerOnOff" : {iobrokerId: 'Sanitzer', typ : typOnOff, subOperation : "SanitizerTime", byteIndex: 0x05, boolBit: SANITIZER_ON},
-                           "SanitizerTime" : {iobrokerId: 'SanitzerTime', typ : typTime, byteIndex: 0x05, boolBit: SANITIZER_ON, valueByteIndex: 0x0D, valueFunc: function(test,val){return (!test)?0:(val & 0b1111)*0.5+1 }, readonly: true},
+        this.operation = { "PowerOnOff" : {iobrokerId: 'Power', typ : typOnOff, byteIndex: BYTE_STATUS, boolBit: CONTROLLER_ON},
+                           "JetOnOff" : {iobrokerId: 'Jet', typ : typOnOff, byteIndex: BYTE_STATUS, boolBit: WATER_JET_ON},
+                           "BubbleOnOff" : {iobrokerId: 'Bubble', typ : typOnOff, byteIndex: BYTE_STATUS, boolBit: BUBBLE_ON},
+                           "HeatOnOff" : {iobrokerId: 'Heat', typ : typOnOff, byteIndex: BYTE_STATUS, boolBit: HEATER_ON},
+                           "FilterOnOff" : {iobrokerId: 'Filter', typ : typOnOff, subOperation : "FilterTime", byteIndex: BYTE_STATUS, boolBit: FILTER_ON},
+                           "FilterTime" : {iobrokerId: 'FilterTime', typ : typTime, byteIndex: BYTE_TIME_FILTER, valueFunc: function(val,raw){let test = raw.readUInt8(BYTE_STATUS);return (!((test & FILTER_ON) == FILTER_ON))?0:((test & HEATER_ON) == HEATER_ON)?-1:(val & 0b1111)*0.5+1 }, readonly: true},
+                           "SanitizerOnOff" : {iobrokerId: 'Sanitzer', typ : typOnOff, subOperation : "SanitizerTime", byteIndex: BYTE_STATUS, boolBit: SANITIZER_ON},
+                           "SanitizerTime" : {iobrokerId: 'SanitzerTime', typ : typTime, byteIndex: BYTE_TIME_SANITIZER, valueFunc: function(val,raw){let test = raw.readUInt8(BYTE_STATUS);return (!((test & SANITIZER_ON) == SANITIZER_ON))?0:(val & 0b1111)*0.5+1 }, readonly: true},
                            "Refresh" : {iobrokerId: 'Refresh', typ : typRefresh, testFunc: function(val){return true}},
-                           "TempSet" : {iobrokerId: 'TargetTemperature', typ : typTemp, subOperation : "Temp", byteIndex: 0x0f},
-                           "Temp" : {iobrokerId: 'Temperature', typ : typTemp, subOperation : "Celsius" , byteIndex: 0x07, readonly: true},
-                           "Celsius" : {iobrokerId: 'Celsius', typ : typCelsius, byteIndex: 0x0f, testFunc: function(val){return val <= 43 }},
+                           "TempSet" : {iobrokerId: 'TargetTemperature', typ : typTemp, subOperation : "Temp", byteIndex: BYTE_TARGET_TEMPERATURE},
+                           "Temp" : {iobrokerId: 'Temperature', typ : typTemp, subOperation : "Celsius" , byteIndex: BYTE_TEMPERATURE, readonly: true},
+                           "Celsius" : {iobrokerId: 'Celsius', typ : typCelsius, byteIndex: BYTE_TARGET_TEMPERATURE, testFunc: function(val){return val <= 43 }},
                          }
         this.control = {};
         
@@ -488,7 +494,7 @@ class Intex extends utils.Adapter {
                 if (control.operation.byteIndex) theValue = returnValue.readUInt8(control.operation.byteIndex)
                 if (control.operation.boolBit) theValue = ((theValue & control.operation.boolBit) == control.operation.boolBit)
                 if (control.operation.testFunc) theValue = control.operation.testFunc(theValue)
-                if (control.operation.valueFunc) theValue = control.operation.valueFunc(theValue,returnValue.readUInt8(control.operation.valueByteIndex))
+                if (control.operation.valueFunc) theValue = control.operation.valueFunc(theValue,returnValue)
                 if (typeof theValue !== 'undefined') {
                     if (this.check[control.id]) {
                         this.log.debug("Test set control " + control.id + " with " + this.check[control.id].val + " !== " + theValue + " / " + this.check[control.id].ti + " < " + res.data.sid)
@@ -694,7 +700,8 @@ class Intex extends utils.Adapter {
                 if (this.control[deviceId] && (controlChannel == channelId) && this.control[deviceId][objId]) {
                     let objctl = this.control[deviceId][objId]
                     switch (objctl.operation.typ) {
-                        case typOnOff, typRefresh: 
+                        case typOnOff: 
+                        case typRefresh: 
                             objectData =  Buffer.from(objctl.command.commandData,'hex');
                             //erstmal das Timeout zurücksetzen es gibt gelich ein neues
                             clearTimeout(this.refreshTimeout);

@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "intex",
-        "version": "0.1.1",
+        "version": "0.1.2",
         "news": {
             "0.1.1": {
                 "en": "Remaining time for filter and sanitizer added under control. \nRefresh added under Control. \nRemote deleted because Control can do it better.",
