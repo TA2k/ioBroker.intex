@@ -62,6 +62,14 @@ https://forum.iobroker.net/topic/47932/test-intext-app-v0-0-x
 
 ## Changelog
 
+### 0.1.3
+
+* (PLCHome) The remaining time for the filter is corrected to the disinfection time if it is longer
+
+### 0.1.2
+
+* (PLCHome) Fixed filter remaining time on heating from 1 to -1 for infinity
+
 ### 0.1.1
 
 * (PLCHome) Remaining time for filter and sanitizer added under control.

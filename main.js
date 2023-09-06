@@ -104,7 +104,15 @@ class Intex extends utils.Adapter {
                            "BubbleOnOff" : {iobrokerId: 'Bubble', typ : typOnOff, byteIndex: BYTE_STATUS, boolBit: BUBBLE_ON},
                            "HeatOnOff" : {iobrokerId: 'Heat', typ : typOnOff, byteIndex: BYTE_STATUS, boolBit: HEATER_ON},
                            "FilterOnOff" : {iobrokerId: 'Filter', typ : typOnOff, subOperation : "FilterTime", byteIndex: BYTE_STATUS, boolBit: FILTER_ON},
-                           "FilterTime" : {iobrokerId: 'FilterTime', typ : typTime, byteIndex: BYTE_TIME_FILTER, valueFunc: function(val,raw){let test = raw.readUInt8(BYTE_STATUS);return (!((test & FILTER_ON) == FILTER_ON))?0:((test & HEATER_ON) == HEATER_ON)?-1:(val & 0b1111)*0.5+1 }, readonly: true},
+                           "FilterTime" : {iobrokerId: 'FilterTime', typ : typTime, byteIndex: BYTE_TIME_FILTER, valueFunc: function(val,raw){
+                                let test = raw.readUInt8(BYTE_STATUS);
+                                let time_filter = (val & 0b1111)*0.5+1;
+                                let time_sanitizer = (raw.readUInt8(BYTE_TIME_SANITIZER) & 0b1111)*0.5+1;
+                                let filter_on = ((test & FILTER_ON) == FILTER_ON);
+                                let heater_on = ((test & HEATER_ON) == HEATER_ON);
+                                let sanitizer_on = ((test & SANITIZER_ON) == SANITIZER_ON);
+                                return !(filter_on)?0:heater_on?-1:sanitizer_on&&(time_sanitizer>time_filter)?time_sanitizer:time_filter;
+                             }, readonly: true},
                            "SanitizerOnOff" : {iobrokerId: 'Sanitzer', typ : typOnOff, subOperation : "SanitizerTime", byteIndex: BYTE_STATUS, boolBit: SANITIZER_ON},
                            "SanitizerTime" : {iobrokerId: 'SanitzerTime', typ : typTime, byteIndex: BYTE_TIME_SANITIZER, valueFunc: function(val,raw){let test = raw.readUInt8(BYTE_STATUS);return (!((test & SANITIZER_ON) == SANITIZER_ON))?0:(val & 0b1111)*0.5+1 }, readonly: true},
                            "Refresh" : {iobrokerId: 'Refresh', typ : typRefresh, testFunc: function(val){return true}},
