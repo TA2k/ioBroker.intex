@@ -1,9 +1,9 @@
 {
     "common": {
         "name": "intex",
-        "version": "0.1.3",
+        "version": "0.1.4",
         "news": {
-            "0.1.3": {
+            "0.1.4": {
                 "en": "Remaining time for filter and sanitizer added under control. \nRefresh added under Control. \nRemote deleted because Control can do it better.",
                 "de": "Restzeit für Filter und Sanitizer unter Kontrolle hinzugefügt.\nRefresh hinzugefügt unter Control.\nRemote gelöscht, weil Control kann es besser.",
                 "ru": "Оставшееся время для фильтра и санитара добавлено под контролем.\nRefresh добавлено под контролем.\nУдаленный удаленный потому что управление может сделать его лучше.",

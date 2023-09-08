@@ -62,6 +62,10 @@ https://forum.iobroker.net/topic/47932/test-intext-app-v0-0-x
 
 ## Changelog
 
+### 0.1.4
+
+* (PLCHome) Changing read-only objects, e.g. temperature, no longer causes a crash.
+
 ### 0.1.3
 
 * (PLCHome) The remaining time for the filter is corrected to the disinfection time if it is longer

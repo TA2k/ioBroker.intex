@@ -707,9 +707,17 @@ class Intex extends utils.Adapter {
                 let objectData
                 if (this.control[deviceId] && (controlChannel == channelId) && this.control[deviceId][objId]) {
                     let objctl = this.control[deviceId][objId]
+                    if (objctl.operation.readonly) {
+                        this.log.error(`${id} is read-only! Don't write without ack!`)
+                        return
+                    }
                     switch (objctl.operation.typ) {
                         case typOnOff: 
                         case typRefresh: 
+                            if(!objctl.command || !objctl.command.commandData) {
+                                this.log.error(`${id} Something is wrong. Can't write. The command string is missing!`)
+                                return
+                            }
                             objectData =  Buffer.from(objctl.command.commandData,'hex');
                             //erstmal das Timeout zurücksetzen es gibt gelich ein neues
                             clearTimeout(this.refreshTimeout);
@@ -728,6 +736,10 @@ class Intex extends utils.Adapter {
                             }
                             break;
                         case typTemp: 
+                            if(!objctl.command || !objctl.command.commandData) {
+                                this.log.error(`${id} Something is wrong. Can't write. The command string is missing!`)
+                                return
+                            }
                             objectData =  Buffer.from(objctl.command.commandData,'hex');
                             if (((state.val >= 10 && state.val <= 40) || (state.val >= 50 && state.val <= 104)) && Math.round(state.val) == state.val) {
                                 objectData = Buffer.concat([objectData, Buffer.from([Math.round(state.val)])]);
