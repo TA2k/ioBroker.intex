@@ -62,6 +62,10 @@ https://forum.iobroker.net/topic/47932/test-intext-app-v0-0-x
 
 ## Changelog
 
+### 0.1.5
+
+* (PLCHome) spelling mistake sanitzer to sanitizer on status control.sanitizer and control.sanitizerTime corrected.
+
 ### 0.1.4
 
 * (PLCHome) Changing read-only objects, e.g. temperature, no longer causes a crash.

@@ -1,20 +1,20 @@
 {
     "common": {
         "name": "intex",
-        "version": "0.1.4",
+        "version": "0.1.5",
         "news": {
-            "0.1.4": {
-                "en": "Remaining time for filter and sanitizer added under control. \nRefresh added under Control. \nRemote deleted because Control can do it better.",
-                "de": "Restzeit für Filter und Sanitizer unter Kontrolle hinzugefügt.\nRefresh hinzugefügt unter Control.\nRemote gelöscht, weil Control kann es besser.",
-                "ru": "Оставшееся время для фильтра и санитара добавлено под контролем.\nRefresh добавлено под контролем.\nУдаленный удаленный потому что управление может сделать его лучше.",
-                "pt": "Tempo restante para filtro e sanitizer adicionado sob controle.\nRefresh adicionado sob controle.\nRemoto excluído porque Control pode fazê-lo melhor.",
-                "nl": "Weer tijd voor filter en sanitizer toegevoegd onder controle.\nVerfrissing toegevoegd onder controle.\nVerwijderd omdat Control het beter kan.",
-                "fr": "Temps restant pour filtre et désinfectant ajouté sous contrôle.\nRafraîchissement ajouté sous Contrôle.\nTélécommande supprimée parce que le contrôle peut le faire mieux.",
-                "it": "Tempo rimanente per il filtro e igienico-sanitari aggiunti sotto controllo.\nRefresh aggiunto sotto controllo.\nCancellato da remoto perché Control può farlo meglio.",
-                "es": "El tiempo restante para el filtro y el sanitizador añadido bajo control.\nRefresh añadido bajo Control.\nRemoto eliminado porque Control puede hacerlo mejor.",
-                "pl": "Nadszedł czas na filtry i sanitizer.\nRefresh dodał pod kontrolą.\nRemote usunął, ponieważ kontrola może go lepiej wykonać.",
-                "uk": "Зменшення часу для фільтрування та дезінфекції додано під контролем.\nВідновити додану під контролем.\nВіддалений видалений, оскільки контроль може зробити це краще.",
-                "zh-cn": "在控制下增加过滤和吸入剂的时间。.\n在控制下增加。.\n遥感被删除,因为控制可以做得更好。."
+            "0.1.5": {
+                "en": "Spelling mistake sanitizer to sanitizer on status control.sanitizer and control.sanitizerTime corrected.\nRemaining time for filter and sanitizer added under control.\nRefresh added under Control.\nRemote deleted because Control can do it better.",
+                "de": "Vergelten Fehler Sanitizer zu sanitizer auf Statuskontrolle. Sanitizer und Kontrolle. Sanitizer Zeit korrigiert.\nRestzeit für Filter und Sanitizer unter Kontrolle hinzugefügt.\nRefresh hinzugefügt unter Control.\nRemote gelöscht, weil Control kann es besser.",
+                "ru": "Проволочная ошибка санитара для санитара на контроль статуса. санитар и контроль. санитар Время исправлено.\nОставшееся время для фильтра и санитара добавлено под контролем.\nRefresh добавлено под контролем.\nУдаленный удаленный потому что управление может сделать его лучше.",
+                "pt": "Ortografia erro sanitizer para sanitizer no controle de status. sanitizer e controle. Sanitários Tempo corrigido.\nTempo restante para filtro e sanitizer adicionado sob controle.\nRefresh adicionado sob controle.\nRemoto excluído porque Control pode fazê-lo melhor.",
+                "nl": "Verstuurde fout sanitizer om de staatscontrole te sanitiseren. Sanitizer en controle. Sanitizer Tijd gecorrigeerd.\nWeer tijd voor filter en sanitizer toegevoegd onder controle.\nVerfrissing toegevoegd onder controle.\nVerwijderd omdat Control het beter kan.",
+                "fr": "Spelling un désinfectant pour désinfecter sur le contrôle du statut. désinfectant et contrôle. sanitizer Temps corrigé.\nTemps restant pour filtre et désinfectant ajouté sous contrôle.\nRafraîchissement ajouté sous Contrôle.\nTélécommande supprimée parce que le contrôle peut le faire mieux.",
+                "it": "Disattivare i sanitizer di errore per i sanitizer sul controllo dello stato. sanitizzatore e controllo. sanificazione Tempo corretto.\nTempo rimanente per il filtro e igienico-sanitari aggiunti sotto controllo.\nRefresh aggiunto sotto controllo.\nCancellato da remoto perché Control può farlo meglio.",
+                "es": "Spelling error sanitizer para sanitizer en control de estado. sanitizante y control. sanitizer Tiempo corregido.\nEl tiempo restante para el filtro y el sanitizador añadido bajo control.\nRefresh añadido bajo Control.\nRemoto eliminado porque Control puede hacerlo mejor.",
+                "pl": "Spelling error sanitizer to sanitizer on status control. sanitizer i kontrola. sanitizer Czas poprawiony.\nNadszedł czas na filtry i sanitizer.\nRefresh dodał pod kontrolą.\nRemote usunął, ponieważ kontrola może go lepiej wykonać.",
+                "uk": "Сприяє сатизатору помилки на контроль стану. дезінфікатор і контроль. дезінфікатор Виправлено час.\nЗменшення часу для фільтрування та дезінфекції додано під контролем.\nВідновити додану під контролем.\nВіддалений видалений, оскільки контроль може зробити це краще.",
+                "zh-cn": "举出错误,使人陷入对地位控制的阴影。 偷窃和控制。 畜牧业 时间纠正。.\n在控制下增加过滤和吸入剂的时间。.\n在控制下增加。.\n遥感被删除,因为控制可以做得更好。."
             },
             "0.1.0": {
                 "en": "Support local IP. Both via cloud and only locally without cloud.",

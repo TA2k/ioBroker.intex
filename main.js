@@ -113,8 +113,8 @@ class Intex extends utils.Adapter {
                                 let sanitizer_on = ((test & SANITIZER_ON) == SANITIZER_ON);
                                 return !(filter_on)?0:heater_on?-1:sanitizer_on&&(time_sanitizer>time_filter)?time_sanitizer:time_filter;
                              }, readonly: true},
-                           "SanitizerOnOff" : {iobrokerId: 'Sanitzer', typ : typOnOff, subOperation : "SanitizerTime", byteIndex: BYTE_STATUS, boolBit: SANITIZER_ON},
-                           "SanitizerTime" : {iobrokerId: 'SanitzerTime', typ : typTime, byteIndex: BYTE_TIME_SANITIZER, valueFunc: function(val,raw){let test = raw.readUInt8(BYTE_STATUS);return (!((test & SANITIZER_ON) == SANITIZER_ON))?0:(val & 0b1111)*0.5+1 }, readonly: true},
+                           "SanitizerOnOff" : {iobrokerId: 'Sanitizer', typ : typOnOff, subOperation : "SanitizerTime", byteIndex: BYTE_STATUS, boolBit: SANITIZER_ON},
+                           "SanitizerTime" : {iobrokerId: 'SanitizerTime', typ : typTime, byteIndex: BYTE_TIME_SANITIZER, valueFunc: function(val,raw){let test = raw.readUInt8(BYTE_STATUS);return (!((test & SANITIZER_ON) == SANITIZER_ON))?0:(val & 0b1111)*0.5+1 }, readonly: true},
                            "Refresh" : {iobrokerId: 'Refresh', typ : typRefresh, testFunc: function(val){return true}},
                            "TempSet" : {iobrokerId: 'TargetTemperature', typ : typTemp, subOperation : "Temp", byteIndex: BYTE_TARGET_TEMPERATURE},
                            "Temp" : {iobrokerId: 'Temperature', typ : typTemp, subOperation : "Celsius" , byteIndex: BYTE_TEMPERATURE, readonly: true},
@@ -267,7 +267,9 @@ class Intex extends utils.Adapter {
                             name: "Remote Controls",
                         },
                         native: {},
-                    })]).then(()=> {
+                    }),
+                    this.delObjectAsync(device.deviceId + ".control.Sanitzer"),
+                    this.delObjectAsync(device.deviceId + ".control.SanitzerTime")]).then(()=> {
                       this.json2iob.parse(device.deviceId + ".general", device);
                       resolve()
                     })
