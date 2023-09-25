@@ -17,7 +17,7 @@
     "url": "https://github.com/TA2k/ioBroker.intex"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=16"
   },
   "dependencies": {
     "@iobroker/adapter-core": "^3.0.3",
