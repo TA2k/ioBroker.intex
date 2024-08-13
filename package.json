@@ -21,6 +21,8 @@
     "node": ">=18"
   },
   "dependencies": {
+    "@alcalzone/release-script-plugin-iobroker": "^3.7.2",
+    "@alcalzone/release-script-plugin-license": "^3.7.0",
     "@iobroker/adapter-core": "^3.1.6",
     "axios": "^1.7.3",
     "dgram": "^1.0.1",
