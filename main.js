@@ -23,6 +23,7 @@ const typRefresh = 0x02;
 const typTemp    = 0x03;
 const typCelsius = 0x04;
 const typTime    = 0x05;
+const typError   = 0x06;
 
 const CONTROLLER_ON    =       0x01;
 const FILTER_ON        =       0x02;
@@ -116,9 +117,10 @@ class Intex extends utils.Adapter {
                            "SanitizerOnOff" : {iobrokerId: 'Sanitizer', typ : typOnOff, subOperation : "SanitizerTime", byteIndex: BYTE_STATUS, boolBit: SANITIZER_ON},
                            "SanitizerTime" : {iobrokerId: 'SanitizerTime', typ : typTime, byteIndex: BYTE_TIME_SANITIZER, valueFunc: function(val,raw){let test = raw.readUInt8(BYTE_STATUS);return (!((test & SANITIZER_ON) == SANITIZER_ON))?0:(val & 0b1111)*0.5+1 }, readonly: true},
                            "Refresh" : {iobrokerId: 'Refresh', typ : typRefresh, testFunc: function(val){return true}},
-                           "TempSet" : {iobrokerId: 'TargetTemperature', typ : typTemp, subOperation : "Temp", byteIndex: BYTE_TARGET_TEMPERATURE},
-                           "Temp" : {iobrokerId: 'Temperature', typ : typTemp, subOperation : "Celsius" , byteIndex: BYTE_TEMPERATURE, readonly: true},
-                           "Celsius" : {iobrokerId: 'Celsius', typ : typCelsius, byteIndex: BYTE_TARGET_TEMPERATURE, testFunc: function(val){return val <= 43 }},
+                           "TempSet" : {iobrokerId: 'TargetTemperature', typ : typTemp, subOperation : "Temp", byteIndex: BYTE_TARGET_TEMPERATURE, testFunc: function(val){if (val>0 && val<181){ return val;} else return;}},
+                           "Temp" : {iobrokerId: 'Temperature', typ : typTemp, subOperation : "Celsius" , byteIndex: BYTE_TEMPERATURE, readonly: true, testFunc: function(val){if (val>0 && val<181){ return val;} else return;}},
+                           "Celsius" : {iobrokerId: 'Celsius', subOperation : "Error", typ : typCelsius, byteIndex: BYTE_TARGET_TEMPERATURE, testFunc: function(val){if (val>0 && val<181){ return val <= 43;} else return;}},
+                           "Error" : {iobrokerId: 'Error', typ : typError, byteIndex: BYTE_TARGET_TEMPERATURE, testFunc: function(val){if (val<181) { return 0;} else { return val-100;}}, readonly: true},
                          }
         this.control = {};
         
@@ -210,7 +212,23 @@ class Intex extends utils.Adapter {
           co.type = "number";
           co.role = "value.interval";
           break;
-      }
+        case typError:
+          co.type = "number";
+          co.role = "value";
+          co.states = {
+            0: "OK",
+            81: "Control panel communication error",
+            90: "No flow",
+            91: "Alarm code (low salt level)",
+            92: "Alarm code (high salt level)",
+            94: "Water temperature too low",
+            95: "The water temperature is around 50°C (122°F)",
+            96: "System error",
+            97: "Dry fire protection",
+            99: "Defective water temperature sensor",
+          };
+          break;
+        }
       if (co) {
         co.name = operation.iobrokerId
         let id=device.deviceId + "."+controlChannel+"." + operation.iobrokerId
@@ -373,7 +391,7 @@ class Intex extends utils.Adapter {
     async updateLocalDevice(hostname, hostport, deviceId = "localtcp") {
         return new Promise((resolve, reject) => {
             this.log.debug("fetching info from hostname:" + hostname + ':' + hostport + 'for' + deviceId);
-            
+
             var to = setTimeout(()=>{resolve(false)},5000);
             var client = new net.Socket();
             const sid = Date.now();
