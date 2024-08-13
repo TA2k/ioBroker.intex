@@ -100,13 +100,12 @@
         ],
         "keywords": [
             "intex",
-            "whirlpool",
-            "ioBroker"
+            "whirlpool"
         ],
         "licenseInformation": {
             "license": "MIT",
             "type": "free"
-          },
+        },
         "platform": "Javascript/Node.js",
         "icon": "intex.png",
         "enabled": true,
