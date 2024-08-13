@@ -66,6 +66,10 @@ https://forum.iobroker.net/topic/47932/test-intext-app-v0-0-x
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+- (PLCHome) Fixed error.
+
 ### 0.1.6 (2024-08-13)
 
 - (PLCHome) Configure this adapter to use the release script.
@@ -94,6 +98,7 @@ https://forum.iobroker.net/topic/47932/test-intext-app-v0-0-x
 * (PLCHome) Remote deleted because Control can do it better.
 
 ### 0.1.0
+
 
 * (rbartl/PLCHome) Support local IP. Both via cloud and only locally without cloud. Thanks to Austria to Robert Bartl.
 * (PLCHome) Confirm directly after switching via Control.

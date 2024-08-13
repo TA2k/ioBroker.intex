@@ -120,7 +120,7 @@ class Intex extends utils.Adapter {
                            "TempSet" : {iobrokerId: 'TargetTemperature', typ : typTemp, subOperation : "Temp", byteIndex: BYTE_TARGET_TEMPERATURE, testFunc: function(val){if (val>0 && val<181){ return val;} else return;}},
                            "Temp" : {iobrokerId: 'Temperature', typ : typTemp, subOperation : "Celsius" , byteIndex: BYTE_TEMPERATURE, readonly: true, testFunc: function(val){if (val>0 && val<181){ return val;} else return;}},
                            "Celsius" : {iobrokerId: 'Celsius', subOperation : "Error", typ : typCelsius, byteIndex: BYTE_TARGET_TEMPERATURE, testFunc: function(val){if (val>0 && val<181){ return val <= 43;} else return;}},
-                           "Error" : {iobrokerId: 'Error', typ : typError, byteIndex: BYTE_TARGET_TEMPERATURE, testFunc: function(val){if (val<181) { return 0;} else { return val-100;}}, readonly: true},
+                           "Error" : {iobrokerId: 'Error', typ : typError, byteIndex: BYTE_TEMPERATURE, testFunc: function(val){if (val<181) { return 0;} else { return val-100;}}, readonly: true},
                          }
         this.control = {};
         
