@@ -100,9 +100,13 @@
         ],
         "keywords": [
             "intex",
-            "whirlpool"
+            "whirlpool",
+            "ioBroker"
         ],
-        "licenseInformation": "MIT",
+        "licenseInformation": {
+            "license": "MIT",
+            "type": "free"
+          },
         "platform": "Javascript/Node.js",
         "icon": "intex.png",
         "enabled": true,
@@ -114,7 +118,7 @@
         "compact": true,
         "connectionType": "cloud",
         "dataSource": "poll",
-        "adminUI": true,
+        "adminUI":  { "config": "materialize" },
         "messagebox": true,
         "tier": 3,
         "plugins": {

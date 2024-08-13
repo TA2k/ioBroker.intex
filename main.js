@@ -186,7 +186,6 @@ class Intex extends utils.Adapter {
     toCelsius(fahrenheit) {
       return Math.round((fahrenheit - 32) / 1.8)
     }
-
     createOperation (device,operation,command) {
       if (operation.subOperation) this.createOperation(device,this.operation[operation.subOperation],null)
       let co = {write: !operation.readonly, read: true}
