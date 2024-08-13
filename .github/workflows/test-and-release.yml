@@ -106,10 +106,10 @@ jobs:
       - name: ioBroker testing action
         uses: ioBroker/testing-action-adapter@v1
 
-      - name: Publish package to npm
-        uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.npm }}
+#      - name: Publish package to npm
+#        uses: JS-DevTools/npm-publish@v1
+#        with:
+#          token: ${{ secrets.npm }}
 
   # Dummy job for skipped builds - without this, github reports the build as failed
   skip-ci:
