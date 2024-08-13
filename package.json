@@ -10,14 +10,15 @@
   "license": "MIT",
   "keywords": [
     "intex",
-    "whirlpool"
+    "whirlpool",
+    "ioBroker"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/TA2k/ioBroker.intex"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "dependencies": {
     "@iobroker/adapter-core": "^3.1.6",

@@ -102,9 +102,8 @@
             "intex",
             "whirlpool"
         ],
-        "license": "MIT",
+        "licenseInformation": "MIT",
         "platform": "Javascript/Node.js",
-        "main": "main.js",
         "icon": "intex.png",
         "enabled": true,
         "extIcon": "https://raw.githubusercontent.com/TA2k/ioBroker.intex/master/admin/intex.png",
@@ -115,9 +114,9 @@
         "compact": true,
         "connectionType": "cloud",
         "dataSource": "poll",
-        "materialize": true,
+        "adminUI": true,
         "messagebox": true,
-        "subscribe": "messagebox",
+        "tier": 3,
         "plugins": {
             "sentry": {
                 "dsn": "https://d220fa0b3fe04f9383cff271d232c3e7@sentry.iobroker.net/155"
@@ -125,7 +124,7 @@
         },
         "dependencies": [
             {
-                "js-controller": ">=3.0.0"
+                "js-controller": ">=5.0.19"
             }
         ],
         "globalDependencies": [
