@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "intex",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "news": {
+      "0.1.7": {
+        "en": "Fixed error.",
+        "de": "Fehler behoben.",
+        "ru": "Исправленная ошибка.",
+        "pt": "Erro fixo.",
+        "nl": "Fout.",
+        "fr": "Erreur corrigée.",
+        "it": "Errore fisso.",
+        "es": "Error corregido.",
+        "pl": "Naprawiono błąd.",
+        "uk": "Виправлена помилка.",
+        "zh-cn": "固定错误 ."
+      },
       "0.1.6": {
         "en": "Configure this adapter to use the release script.\nNew object error, the error is extracted from the temperature if one is pending.",
         "de": "Konfigurieren Sie diesen Adapter, um das Release-Skript zu verwenden.\nNeuer Objektfehler, der Fehler wird aus der Temperatur extrahiert, wenn man anhängt.",

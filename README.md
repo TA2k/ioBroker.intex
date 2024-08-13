@@ -66,7 +66,7 @@ https://forum.iobroker.net/topic/47932/test-intext-app-v0-0-x
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.1.7 (2024-08-13)
 
 - (PLCHome) Fixed error.
 
