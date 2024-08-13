@@ -66,8 +66,7 @@ https://forum.iobroker.net/topic/47932/test-intext-app-v0-0-x
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 0.1.6 (2024-08-13)
 
 - (PLCHome) Configure this adapter to use the release script.
 - (PLCHome) New object error, the error is extracted from the temperature if one is pending.

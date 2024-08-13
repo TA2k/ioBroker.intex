@@ -1,177 +1,192 @@
 {
-    "common": {
-        "name": "intex",
-        "version": "0.1.5",
-        "news": {
-            "0.1.5": {
-                "en": "Spelling mistake sanitizer to sanitizer on status control.sanitizer and control.sanitizerTime corrected.\nRemaining time for filter and sanitizer added under control.\nRefresh added under Control.\nRemote deleted because Control can do it better.",
-                "de": "Vergelten Fehler Sanitizer zu sanitizer auf Statuskontrolle. Sanitizer und Kontrolle. Sanitizer Zeit korrigiert.\nRestzeit für Filter und Sanitizer unter Kontrolle hinzugefügt.\nRefresh hinzugefügt unter Control.\nRemote gelöscht, weil Control kann es besser.",
-                "ru": "Проволочная ошибка санитара для санитара на контроль статуса. санитар и контроль. санитар Время исправлено.\nОставшееся время для фильтра и санитара добавлено под контролем.\nRefresh добавлено под контролем.\nУдаленный удаленный потому что управление может сделать его лучше.",
-                "pt": "Ortografia erro sanitizer para sanitizer no controle de status. sanitizer e controle. Sanitários Tempo corrigido.\nTempo restante para filtro e sanitizer adicionado sob controle.\nRefresh adicionado sob controle.\nRemoto excluído porque Control pode fazê-lo melhor.",
-                "nl": "Verstuurde fout sanitizer om de staatscontrole te sanitiseren. Sanitizer en controle. Sanitizer Tijd gecorrigeerd.\nWeer tijd voor filter en sanitizer toegevoegd onder controle.\nVerfrissing toegevoegd onder controle.\nVerwijderd omdat Control het beter kan.",
-                "fr": "Spelling un désinfectant pour désinfecter sur le contrôle du statut. désinfectant et contrôle. sanitizer Temps corrigé.\nTemps restant pour filtre et désinfectant ajouté sous contrôle.\nRafraîchissement ajouté sous Contrôle.\nTélécommande supprimée parce que le contrôle peut le faire mieux.",
-                "it": "Disattivare i sanitizer di errore per i sanitizer sul controllo dello stato. sanitizzatore e controllo. sanificazione Tempo corretto.\nTempo rimanente per il filtro e igienico-sanitari aggiunti sotto controllo.\nRefresh aggiunto sotto controllo.\nCancellato da remoto perché Control può farlo meglio.",
-                "es": "Spelling error sanitizer para sanitizer en control de estado. sanitizante y control. sanitizer Tiempo corregido.\nEl tiempo restante para el filtro y el sanitizador añadido bajo control.\nRefresh añadido bajo Control.\nRemoto eliminado porque Control puede hacerlo mejor.",
-                "pl": "Spelling error sanitizer to sanitizer on status control. sanitizer i kontrola. sanitizer Czas poprawiony.\nNadszedł czas na filtry i sanitizer.\nRefresh dodał pod kontrolą.\nRemote usunął, ponieważ kontrola może go lepiej wykonać.",
-                "uk": "Сприяє сатизатору помилки на контроль стану. дезінфікатор і контроль. дезінфікатор Виправлено час.\nЗменшення часу для фільтрування та дезінфекції додано під контролем.\nВідновити додану під контролем.\nВіддалений видалений, оскільки контроль може зробити це краще.",
-                "zh-cn": "举出错误,使人陷入对地位控制的阴影。 偷窃和控制。 畜牧业 时间纠正。.\n在控制下增加过滤和吸入剂的时间。.\n在控制下增加。.\n遥感被删除,因为控制可以做得更好。."
-            },
-            "0.1.0": {
-                "en": "Support local IP. Both via cloud and only locally without cloud.",
-                "de": "Unterstützt lokale IP. Sowohl über Cloud als auch nur lokal ohne Cloud.",
-                "ru": "Поддержка локального IP. Оба через облако и только локально без облака.",
-                "pt": "Suporte IP local. Ambos via nuvem e apenas localmente sem nuvem.",
-                "nl": "Steun lokale IP. Beide via wolk en alleen lokaal zonder wolk.",
-                "fr": "Appuyer l'IP locale. Par le nuage et seulement localement sans nuage.",
-                "it": "Supporto IP locale. Sia via cloud che solo localmente senza cloud.",
-                "es": "Soporte IP local. Tanto a través de la nube como localmente sin nube.",
-                "pl": "Wsparcie lokalnej IP. Zarówno przez chmurę, jak i tylko lokalnie bez chmur.",
-                "uk": "Підтримка локального IP. І через хмару і тільки локально без хмари.",
-                "zh-cn": "支持地方IP。 无论是通过云雾,还是当地都无云。."
-            },
-            "0.0.7": {
-                "en": "Switching via remote works again.",
-                "de": "Umschalten über Remote funktioniert wieder.",
-                "ru": "Переключение через удаленные работы снова.",
-                "pt": "Mudar via trabalhos remotos novamente.",
-                "nl": "Verwisselen via afstandsbediening werkt weer.",
-                "fr": "Intervertir via des travaux distants à nouveau.",
-                "it": "Passare di nuovo attraverso lavori remoti.",
-                "es": "Cambiar a través de obras remotas de nuevo.",
-                "pl": "Zdarza się, że dzięki odległym działaniom.",
-                "uk": "Switching via remote works again.",
-                "zh-cn": "通过边远工程来解。."
-            },
-            "0.0.6": {
-                "en": "Defined setting of states",
-                "de": "Definiertes Setzen von Zuständen",
-                "ru": "Определенная настройка состояний",
-                "pt": "Configuração definida de estados",
-                "nl": "Gedefinieerde instelling van toestanden",
-                "fr": "Réglage défini des états",
-                "it": "Impostazione definita degli stati",
-                "es": "Configuración definida de estados",
-                "pl": "Zdefiniowane ustawienie stanów",
-                "uk": "Defined setting of states",
-                "zh-cn": "状态的定义设置"
-            },
-            "0.0.4": {
-                "en": "initial release",
-                "de": "Erstveröffentlichung",
-                "ru": "Начальная версия",
-                "pt": "lançamento inicial",
-                "nl": "Eerste uitgave",
-                "fr": "Première version",
-                "it": "Versione iniziale",
-                "es": "Versión inicial",
-                "pl": "Pierwsze wydanie",
-                "uk": "initial release",
-                "zh-cn": "首次出版"
-            }
-        },
-        "titleLang": {
-            "en": "Intex",
-            "de": "Intex",
-            "ru": "Intex",
-            "pt": "Intex",
-            "nl": "Intex",
-            "fr": "Intex",
-            "it": "Intex",
-            "es": "Intex",
-            "pl": "Intex",
-            "uk": "Intex",
-            "zh-cn": "国际展览中心"
-        },
-        "desc": {
-            "en": "Adapter for Intex Whirlpool",
-            "de": "Adapter für Intex Whirlpool",
-            "ru": "Адаптер для Intex Whirlpool",
-            "pt": "Adaptador para Intex Whirlpool",
-            "nl": "Adapter voor Intex Whirlpool",
-            "fr": "Adaptateur pour Intex Whirlpool",
-            "it": "Adattatore per Intex Whirlpool",
-            "es": "Adaptador para bañera de hidromasaje Intex",
-            "pl": "Adapter do Intex Whirlpool",
-            "uk": "Adapter do Intex Whirlpool",
-            "zh-cn": "Intex Whirlpool 适配器"
-        },
-        "authors": [
-            "TA2k <tombox2020@gmail.com>"
-        ],
-        "keywords": [
-            "intex",
-            "whirlpool"
-        ],
-        "licenseInformation": {
-            "license": "MIT",
-            "type": "free"
-        },
-        "platform": "Javascript/Node.js",
-        "icon": "intex.png",
-        "enabled": true,
-        "extIcon": "https://raw.githubusercontent.com/TA2k/ioBroker.intex/master/admin/intex.png",
-        "readme": "https://github.com/TA2k/ioBroker.intex/blob/master/README.md",
-        "loglevel": "info",
-        "mode": "daemon",
-        "type": "household",
-        "compact": true,
-        "connectionType": "cloud",
-        "dataSource": "poll",
-        "adminUI":  { "config": "materialize" },
-        "messagebox": true,
-        "tier": 3,
-        "plugins": {
-            "sentry": {
-                "dsn": "https://d220fa0b3fe04f9383cff271d232c3e7@sentry.iobroker.net/155"
-            }
-        },
-        "dependencies": [
-            {
-                "js-controller": ">=5.0.19"
-            }
-        ],
-        "globalDependencies": [
-            {
-                "admin": ">=4.0.9"
-            }
-        ]
+  "common": {
+    "name": "intex",
+    "version": "0.1.6",
+    "news": {
+      "0.1.6": {
+        "en": "Configure this adapter to use the release script.\nNew object error, the error is extracted from the temperature if one is pending.",
+        "de": "Konfigurieren Sie diesen Adapter, um das Release-Skript zu verwenden.\nNeuer Objektfehler, der Fehler wird aus der Temperatur extrahiert, wenn man anhängt.",
+        "ru": "Настроить этот адаптер для использования сценария релиза.\nНовая ошибка объекта, ошибка извлекается из температуры, если один находится на рассмотрении.",
+        "pt": "Configure este adaptador para usar o script de lançamento.\nNovo erro de objeto, o erro é extraído da temperatura se estiver pendente.",
+        "nl": "Configureer deze adapter om het release script te gebruiken.\nNieuwe objectfout, de fout wordt uit de temperatuur gehaald als er een in behandeling is.",
+        "fr": "Configurez cet adaptateur pour utiliser le script de sortie.\nNouvelle erreur d'objet, l'erreur est extraite de la température si on est en attente.",
+        "it": "Configurare questo adattatore per utilizzare lo script di rilascio.\nNuovo errore dell'oggetto, l'errore viene estratto dalla temperatura se si è in attesa.",
+        "es": "Configure este adaptador para usar el script de liberación.\nNuevo error de objeto, el error se extrae de la temperatura si uno está pendiente.",
+        "pl": "Konfiguracja adaptera do użycia skryptu wydania.\nNowy błąd obiektu, błąd jest pobierany z temperatury, jeśli jest w toku.",
+        "uk": "Налаштування цього адаптера для використання сценарію релізу.\nНова помилка об'єкта, похибка витягується з температури, якщо це закінчиться.",
+        "zh-cn": "配置此适配器以使用发布脚本 .\n新建对象错误, 如果待定, 则从温度中提取错误 ."
+      },
+      "0.1.5": {
+        "en": "Spelling mistake sanitizer to sanitizer on status control.sanitizer and control.sanitizerTime corrected.\nRemaining time for filter and sanitizer added under control.\nRefresh added under Control.\nRemote deleted because Control can do it better.",
+        "de": "Vergelten Fehler Sanitizer zu sanitizer auf Statuskontrolle. Sanitizer und Kontrolle. Sanitizer Zeit korrigiert.\nRestzeit für Filter und Sanitizer unter Kontrolle hinzugefügt.\nRefresh hinzugefügt unter Control.\nRemote gelöscht, weil Control kann es besser.",
+        "ru": "Проволочная ошибка санитара для санитара на контроль статуса. санитар и контроль. санитар Время исправлено.\nОставшееся время для фильтра и санитара добавлено под контролем.\nRefresh добавлено под контролем.\nУдаленный удаленный потому что управление может сделать его лучше.",
+        "pt": "Ortografia erro sanitizer para sanitizer no controle de status. sanitizer e controle. Sanitários Tempo corrigido.\nTempo restante para filtro e sanitizer adicionado sob controle.\nRefresh adicionado sob controle.\nRemoto excluído porque Control pode fazê-lo melhor.",
+        "nl": "Verstuurde fout sanitizer om de staatscontrole te sanitiseren. Sanitizer en controle. Sanitizer Tijd gecorrigeerd.\nWeer tijd voor filter en sanitizer toegevoegd onder controle.\nVerfrissing toegevoegd onder controle.\nVerwijderd omdat Control het beter kan.",
+        "fr": "Spelling un désinfectant pour désinfecter sur le contrôle du statut. désinfectant et contrôle. sanitizer Temps corrigé.\nTemps restant pour filtre et désinfectant ajouté sous contrôle.\nRafraîchissement ajouté sous Contrôle.\nTélécommande supprimée parce que le contrôle peut le faire mieux.",
+        "it": "Disattivare i sanitizer di errore per i sanitizer sul controllo dello stato. sanitizzatore e controllo. sanificazione Tempo corretto.\nTempo rimanente per il filtro e igienico-sanitari aggiunti sotto controllo.\nRefresh aggiunto sotto controllo.\nCancellato da remoto perché Control può farlo meglio.",
+        "es": "Spelling error sanitizer para sanitizer en control de estado. sanitizante y control. sanitizer Tiempo corregido.\nEl tiempo restante para el filtro y el sanitizador añadido bajo control.\nRefresh añadido bajo Control.\nRemoto eliminado porque Control puede hacerlo mejor.",
+        "pl": "Spelling error sanitizer to sanitizer on status control. sanitizer i kontrola. sanitizer Czas poprawiony.\nNadszedł czas na filtry i sanitizer.\nRefresh dodał pod kontrolą.\nRemote usunął, ponieważ kontrola może go lepiej wykonać.",
+        "uk": "Сприяє сатизатору помилки на контроль стану. дезінфікатор і контроль. дезінфікатор Виправлено час.\nЗменшення часу для фільтрування та дезінфекції додано під контролем.\nВідновити додану під контролем.\nВіддалений видалений, оскільки контроль може зробити це краще.",
+        "zh-cn": "举出错误,使人陷入对地位控制的阴影。 偷窃和控制。 畜牧业 时间纠正。.\n在控制下增加过滤和吸入剂的时间。.\n在控制下增加。.\n遥感被删除,因为控制可以做得更好。."
+      },
+      "0.1.0": {
+        "en": "Support local IP. Both via cloud and only locally without cloud.",
+        "de": "Unterstützt lokale IP. Sowohl über Cloud als auch nur lokal ohne Cloud.",
+        "ru": "Поддержка локального IP. Оба через облако и только локально без облака.",
+        "pt": "Suporte IP local. Ambos via nuvem e apenas localmente sem nuvem.",
+        "nl": "Steun lokale IP. Beide via wolk en alleen lokaal zonder wolk.",
+        "fr": "Appuyer l'IP locale. Par le nuage et seulement localement sans nuage.",
+        "it": "Supporto IP locale. Sia via cloud che solo localmente senza cloud.",
+        "es": "Soporte IP local. Tanto a través de la nube como localmente sin nube.",
+        "pl": "Wsparcie lokalnej IP. Zarówno przez chmurę, jak i tylko lokalnie bez chmur.",
+        "uk": "Підтримка локального IP. І через хмару і тільки локально без хмари.",
+        "zh-cn": "支持地方IP。 无论是通过云雾,还是当地都无云。."
+      },
+      "0.0.7": {
+        "en": "Switching via remote works again.",
+        "de": "Umschalten über Remote funktioniert wieder.",
+        "ru": "Переключение через удаленные работы снова.",
+        "pt": "Mudar via trabalhos remotos novamente.",
+        "nl": "Verwisselen via afstandsbediening werkt weer.",
+        "fr": "Intervertir via des travaux distants à nouveau.",
+        "it": "Passare di nuovo attraverso lavori remoti.",
+        "es": "Cambiar a través de obras remotas de nuevo.",
+        "pl": "Zdarza się, że dzięki odległym działaniom.",
+        "uk": "Switching via remote works again.",
+        "zh-cn": "通过边远工程来解。."
+      },
+      "0.0.6": {
+        "en": "Defined setting of states",
+        "de": "Definiertes Setzen von Zuständen",
+        "ru": "Определенная настройка состояний",
+        "pt": "Configuração definida de estados",
+        "nl": "Gedefinieerde instelling van toestanden",
+        "fr": "Réglage défini des états",
+        "it": "Impostazione definita degli stati",
+        "es": "Configuración definida de estados",
+        "pl": "Zdefiniowane ustawienie stanów",
+        "uk": "Defined setting of states",
+        "zh-cn": "状态的定义设置"
+      },
+      "0.0.4": {
+        "en": "initial release",
+        "de": "Erstveröffentlichung",
+        "ru": "Начальная версия",
+        "pt": "lançamento inicial",
+        "nl": "Eerste uitgave",
+        "fr": "Première version",
+        "it": "Versione iniziale",
+        "es": "Versión inicial",
+        "pl": "Pierwsze wydanie",
+        "uk": "initial release",
+        "zh-cn": "首次出版"
+      }
     },
-    "encryptedNative": [
-        "password"
-    ],
-    "protectedNative": [
-        "password"
-    ],
-    "native": {
-        "username": "",
-        "password": "",
-        "interval": 1,
-        "hostname": "",
-        "port": 8990,
-        "strategy" : 1
+    "titleLang": {
+      "en": "Intex",
+      "de": "Intex",
+      "ru": "Intex",
+      "pt": "Intex",
+      "nl": "Intex",
+      "fr": "Intex",
+      "it": "Intex",
+      "es": "Intex",
+      "pl": "Intex",
+      "uk": "Intex",
+      "zh-cn": "国际展览中心"
     },
-    "objects": [],
-    "instanceObjects": [
-        {
-            "_id": "info",
-            "type": "channel",
-            "common": {
-                "name": "Information"
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.connection",
-            "type": "state",
-            "common": {
-                "role": "indicator.connected",
-                "name": "Device or service connected",
-                "type": "boolean",
-                "read": true,
-                "write": false,
-                "def": false
-            },
-            "native": {}
-        }
+    "desc": {
+      "en": "Adapter for Intex Whirlpool",
+      "de": "Adapter für Intex Whirlpool",
+      "ru": "Адаптер для Intex Whirlpool",
+      "pt": "Adaptador para Intex Whirlpool",
+      "nl": "Adapter voor Intex Whirlpool",
+      "fr": "Adaptateur pour Intex Whirlpool",
+      "it": "Adattatore per Intex Whirlpool",
+      "es": "Adaptador para bañera de hidromasaje Intex",
+      "pl": "Adapter do Intex Whirlpool",
+      "uk": "Adapter do Intex Whirlpool",
+      "zh-cn": "Intex Whirlpool 适配器"
+    },
+    "authors": [
+      "TA2k <tombox2020@gmail.com>"
+    ],
+    "keywords": [
+      "intex",
+      "whirlpool"
+    ],
+    "licenseInformation": {
+      "license": "MIT",
+      "type": "free"
+    },
+    "platform": "Javascript/Node.js",
+    "icon": "intex.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/TA2k/ioBroker.intex/master/admin/intex.png",
+    "readme": "https://github.com/TA2k/ioBroker.intex/blob/master/README.md",
+    "loglevel": "info",
+    "mode": "daemon",
+    "type": "household",
+    "compact": true,
+    "connectionType": "cloud",
+    "dataSource": "poll",
+    "adminUI": {
+      "config": "materialize"
+    },
+    "messagebox": true,
+    "tier": 3,
+    "plugins": {
+      "sentry": {
+        "dsn": "https://d220fa0b3fe04f9383cff271d232c3e7@sentry.iobroker.net/155"
+      }
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=5.0.19"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=4.0.9"
+      }
     ]
+  },
+  "encryptedNative": [
+    "password"
+  ],
+  "protectedNative": [
+    "password"
+  ],
+  "native": {
+    "username": "",
+    "password": "",
+    "interval": 1,
+    "hostname": "",
+    "port": 8990,
+    "strategy": 1
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "Device or service connected",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    }
+  ]
 }
