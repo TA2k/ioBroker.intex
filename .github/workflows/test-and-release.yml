@@ -5,16 +5,16 @@ name: Test and Release
 on:
   push:
     branches:
-      - '*'
+      - "*"
     tags:
       # normal versions
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - "v[0-9]+.[0-9]+.[0-9]+"
       # pre-releases
-      - 'v[0-9]+.[0-9]+.[0-9]+-**'
+      - "v[0-9]+.[0-9]+.[0-9]+-**"
 
   pull_request:
     branches:
-      - '*'
+      - "*"
 
 jobs:
   # Performs quick checks before the expensive test runs
@@ -106,10 +106,10 @@ jobs:
       - name: ioBroker testing action
         uses: ioBroker/testing-action-adapter@v1
 
-#      - name: Publish package to npm
-#        uses: JS-DevTools/npm-publish@v1
-#        with:
-#          token: ${{ secrets.npm }}
+  #      - name: Publish package to npm
+  #        uses: JS-DevTools/npm-publish@v1
+  #        with:
+  #          token: ${{ secrets.npm }}
 
   # Dummy job for skipped builds - without this, github reports the build as failed
   skip-ci:

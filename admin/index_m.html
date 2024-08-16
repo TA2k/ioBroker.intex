@@ -1,163 +1,201 @@
 <html>
-    <head>
-        <!-- Load ioBroker scripts and styles-->
-        <link rel="stylesheet" type="text/css" href="../../css/adapter.css" />
-        <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css" />
+  <head>
+    <!-- Load ioBroker scripts and styles-->
+    <link rel="stylesheet" type="text/css" href="../../css/adapter.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="../../lib/css/materialize.css"
+    />
 
-        <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
-        <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+    <script
+      type="text/javascript"
+      src="../../lib/js/jquery-3.2.1.min.js"
+    ></script>
+    <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
 
-        <script type="text/javascript" src="../../js/translate.js"></script>
-        <script type="text/javascript" src="../../lib/js/materialize.js"></script>
-        <script type="text/javascript" src="../../js/adapter-settings.js"></script>
+    <script type="text/javascript" src="../../js/translate.js"></script>
+    <script type="text/javascript" src="../../lib/js/materialize.js"></script>
+    <script type="text/javascript" src="../../js/adapter-settings.js"></script>
 
-        <!-- Load our own files -->
-        <link rel="stylesheet" type="text/css" href="style.css" />
-        <script type="text/javascript" src="words.js"></script>
+    <!-- Load our own files -->
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script type="text/javascript" src="words.js"></script>
 
-        <script type="text/javascript">
-            // This will be called by the admin adapter when the settings page loads
-            function getPools() {
-                let callTimeout = setTimeout(() => {
-                    alert('The server did not respond to the request!');
-                }, 20000);
-                sendTo('intex.' + instance, 'getPools', '{}', function (result) {
-                    clearTimeout(callTimeout);
-                    console.log(result);
-                    $('#hostlist').empty()
-                    let r = JSON.parse(result);
-                    r.forEach((host) => {$('#hostlist').append(new Option("ip: "+host.ip, host.ip))});
-                })
+    <script type="text/javascript">
+      // This will be called by the admin adapter when the settings page loads
+      function getPools() {
+        let callTimeout = setTimeout(() => {
+          alert("The server did not respond to the request!");
+        }, 20000);
+        sendTo("intex." + instance, "getPools", "{}", function (result) {
+          clearTimeout(callTimeout);
+          console.log(result);
+          $("#hostlist").empty();
+          let r = JSON.parse(result);
+          r.forEach((host) => {
+            $("#hostlist").append(new Option("ip: " + host.ip, host.ip));
+          });
+        });
+      }
+
+      function load(settings, onChange) {
+        // example: select elements with id=key and class=value and insert value
+        if (!settings) return;
+        $(".value").each(function () {
+          var $key = $(this);
+          var id = $key.attr("id");
+          if (
+            id == "hostport" &&
+            (isNaN(parseInt(settings[id])) ||
+              parseInt(settings[id]) < 1 ||
+              parseInt(settings[id]) > 65535)
+          ) {
+            settings[id] = 8990;
+          }
+          if (
+            id == "strategy" &&
+            (isNaN(parseInt(settings[id])) ||
+              parseInt(settings[id]) < 1 ||
+              parseInt(settings[id]) > 4)
+          ) {
+            settings[id] = 1;
+          }
+
+          if ($key.attr("type") === "checkbox") {
+            // do not call onChange direct, because onChange could expect some arguments
+            $key.prop("checked", settings[id]).on("change", () => onChange());
+          } else {
+            // do not call onChange direct, because onChange could expect some arguments
+            $key
+              .val(settings[id])
+              .on("change", () => onChange())
+              .on("keyup", () => onChange());
+          }
+        });
+        $("#strategy")
+          .change(function () {
+            if (parseInt($(this).val()) == 4) {
+              $(".username").hide();
+              $(".password").hide();
+              $(".cloudonly").hide();
+              $(".hostname").show();
+              $(".hostport").show();
+            } else {
+              $(".username").show();
+              $(".password").show();
+              $(".cloudonly").show();
+              $(".hostname").hide();
+              $(".hostport").hide();
             }
-            
-            function load(settings, onChange) {
-                // example: select elements with id=key and class=value and insert value
-                if (!settings) return;
-                $(".value").each(function () {
-                    var $key = $(this);
-                    var id = $key.attr("id");
-                    if (id=='hostport' && (isNaN(parseInt(settings[id])) || parseInt(settings[id])<1 || parseInt(settings[id])>65535)) {
-                        settings[id] = 8990
-                    }
-                    if (id=='strategy' && (isNaN(parseInt(settings[id])) || parseInt(settings[id])<1 || parseInt(settings[id])>4)) {
-                        settings[id] = 1
-                    }
-                    
-                    if ($key.attr("type") === "checkbox") {
-                        // do not call onChange direct, because onChange could expect some arguments
-                        $key.prop("checked", settings[id]).on("change", () => onChange());
-                    } else {
-                        // do not call onChange direct, because onChange could expect some arguments
-                        $key.val(settings[id])
-                            .on("change", () => onChange())
-                            .on("keyup", () => onChange());
-                    }
-                });
-                $('#strategy')
-                .change(function () {
-                  if (parseInt($(this).val())==4) {
-                    $('.username').hide();
-                    $('.password').hide();
-                    $('.cloudonly').hide();
-                    $('.hostname').show();
-                    $('.hostport').show();
-                  } else {
-                    $('.username').show();
-                    $('.password').show();
-                    $('.cloudonly').show();
-                    $('.hostname').hide();
-                    $('.hostport').hide();
-                  }
-                })
-                .trigger('change');
+          })
+          .trigger("change");
 
-                $('.getPools')
-                .on('click', function () {
-                   getPools();
-                });
+        $(".getPools").on("click", function () {
+          getPools();
+        });
 
-                onChange(false);
-                // reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
-                if (M) M.updateTextFields();
-            }
+        onChange(false);
+        // reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
+        if (M) M.updateTextFields();
+      }
 
-            // This will be called by the admin adapter when the user presses the save button
-            function save(callback) {
-                // example: select elements with class=value and build settings object
-                var obj = {};
-                $(".value").each(function () {
-                    var $this = $(this);
-                    if ($this.attr("type") === "checkbox") {
-                        obj[$this.attr("id")] = $this.prop("checked");
-                    } else if ($this.attr("type") === "number") {
-                        obj[$this.attr("id")] = parseFloat($this.val());
-                    } else {
-                        obj[$this.attr("id")] = $this.val();
-                    }
-                });
-                callback(obj);
-            }
-        </script>
-    </head>
+      // This will be called by the admin adapter when the user presses the save button
+      function save(callback) {
+        // example: select elements with class=value and build settings object
+        var obj = {};
+        $(".value").each(function () {
+          var $this = $(this);
+          if ($this.attr("type") === "checkbox") {
+            obj[$this.attr("id")] = $this.prop("checked");
+          } else if ($this.attr("type") === "number") {
+            obj[$this.attr("id")] = parseFloat($this.val());
+          } else {
+            obj[$this.attr("id")] = $this.val();
+          }
+        });
+        callback(obj);
+      }
+    </script>
+  </head>
 
-    <body>
-        <div class="m adapter-container">
-            <div class="row">
-                <div class="col s12 m4 l2">
-                    <img src="intex.png" class="logo" />
-                </div>
-            </div>
-
-            <div class="row">
-              <div class="col s6 input-field">
-                <select class="value" id="strategy" >
-                  <option value=1 class="translate">Cloud secondary; Pool local if available</option>
-                  <option value=2 class="translate">Cloud secondary; Pool only local</option>
-                  <option value=3 class="translate">Only cloud</option>
-                  <option value=4 class="translate">Only local</option>
-                </select>
-                <label for="strategy" class="translate">The strategy of how to communicate with the pool and the cloud</label>
-              </div>
-            </div>
-            
-            <div class="row hostname">
-                <div class="col s6 input-field">
-                    <input type="text" class="value " id="hostname" list="hostlist" />
-                    <datalist id="hostlist">
-                    </datalist>
-                    <label for="hostname" class="translate">Pool device address</label>
-                </div>
-                <div class="col s1 input-field">
-                    <a class="btn-floating btn-small getPools" class="translate" title="find pools" data-lang-title="find pools">
-                        <i class="material-icons">search</i>
-                    </a>
-                </div>
-            </div>
-            <div class="row hostport">
-                <div class="col s6 input-field">
-                    <input type="number" class="value" id="hostport" min=0 max=65535 step=1/>
-                    <label for="hostport" class="translate">Pool port address</label>
-                </div>
-            </div>
-            <div class="row username">
-                <div class="col s6 input-field">
-                    <input type="text" class="value" id="username" />
-                    <label for="username" class="translate">App Email</label>
-                </div>
-            </div>
-            <div class="row password">
-                <div class="col s6 input-field">
-                    <input type="password" class="value" id="password" />
-                    <label for="password" class="translate">App Password</label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col s2 input-field">
-                    <input type="number" class="value" id="interval" />
-                    <label for="interval" class="translate">Update interval in minutes</label>
-                </div>
-            </div>
-
+  <body>
+    <div class="m adapter-container">
+      <div class="row">
+        <div class="col s12 m4 l2">
+          <img src="intex.png" class="logo" />
         </div>
-    </body>
+      </div>
+
+      <div class="row">
+        <div class="col s6 input-field">
+          <select class="value" id="strategy">
+            <option value="1" class="translate">
+              Cloud secondary; Pool local if available
+            </option>
+            <option value="2" class="translate">
+              Cloud secondary; Pool only local
+            </option>
+            <option value="3" class="translate">Only cloud</option>
+            <option value="4" class="translate">Only local</option>
+          </select>
+          <label for="strategy" class="translate"
+            >The strategy of how to communicate with the pool and the
+            cloud</label
+          >
+        </div>
+      </div>
+
+      <div class="row hostname">
+        <div class="col s6 input-field">
+          <input type="text" class="value" id="hostname" list="hostlist" />
+          <datalist id="hostlist"> </datalist>
+          <label for="hostname" class="translate">Pool device address</label>
+        </div>
+        <div class="col s1 input-field">
+          <a
+            class="btn-floating btn-small getPools"
+            class="translate"
+            title="find pools"
+            data-lang-title="find pools"
+          >
+            <i class="material-icons">search</i>
+          </a>
+        </div>
+      </div>
+      <div class="row hostport">
+        <div class="col s6 input-field">
+          <input
+            type="number"
+            class="value"
+            id="hostport"
+            min="0"
+            max="65535"
+            step="1"
+          />
+          <label for="hostport" class="translate">Pool port address</label>
+        </div>
+      </div>
+      <div class="row username">
+        <div class="col s6 input-field">
+          <input type="text" class="value" id="username" />
+          <label for="username" class="translate">App Email</label>
+        </div>
+      </div>
+      <div class="row password">
+        <div class="col s6 input-field">
+          <input type="password" class="value" id="password" />
+          <label for="password" class="translate">App Password</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s2 input-field">
+          <input type="number" class="value" id="interval" />
+          <label for="interval" class="translate"
+            >Update interval in minutes</label
+          >
+        </div>
+      </div>
+    </div>
+  </body>
 </html>
