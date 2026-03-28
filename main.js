@@ -9,13 +9,13 @@
 const utils = require("@iobroker/adapter-core");
 const axios = require("axios");
 const Buffer = require("safe-buffer").Buffer;
-const net = require("net");
-const dgram = require("dgram");
+const net = require("node:net");
+const dgram = require("node:dgram");
 
 const Json2iob = require("./lib/json2iob");
 
 // Load your modules here, e.g.:
-// const fs = require("fs");
+// const fs = require("node:fs");
 
 const typOnOff = 0x01;
 const typRefresh = 0x02;
