@@ -74,6 +74,9 @@ https://forum.iobroker.net/topic/47932/test-intext-app-v0-0-x
   ### **WORK IN PROGRESS**
 -->
 
+### **WORK IN PROGRESS**
+- (copilot) Adapter requires node.js >= 22 now
+
 ### 0.1.7 (2024-08-13)
 
 - (PLCHome) Fixed error.
