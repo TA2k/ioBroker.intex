@@ -74,6 +74,10 @@ https://forum.iobroker.net/topic/47932/test-intext-app-v0-0-x
   ### **WORK IN PROGRESS**
 -->
 
+
+### **WORK IN PROGRESS**
+- (ioBroker-Bot) Adapter requires js-controller >= 6.0.11 now.
+
 ### 0.1.7 (2024-08-13)
 
 - (PLCHome) Fixed error.
