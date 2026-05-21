@@ -121,8 +121,13 @@
       "uk": "Adapter do Intex Whirlpool",
       "zh-cn": "Intex Whirlpool 适配器"
     },
-    "authors": ["TA2k <tombox2020@gmail.com>"],
-    "keywords": ["intex", "whirlpool"],
+    "authors": [
+      "TA2k <tombox2020@gmail.com>"
+    ],
+    "keywords": [
+      "intex",
+      "whirlpool"
+    ],
     "licenseInformation": {
       "license": "MIT",
       "type": "free"
@@ -150,7 +155,7 @@
     },
     "dependencies": [
       {
-        "js-controller": ">=5.0.19"
+        "js-controller": ">=6.0.11"
       }
     ],
     "globalDependencies": [
@@ -159,8 +164,12 @@
       }
     ]
   },
-  "encryptedNative": ["password"],
-  "protectedNative": ["password"],
+  "encryptedNative": [
+    "password"
+  ],
+  "protectedNative": [
+    "password"
+  ],
   "native": {
     "username": "",
     "password": "",
